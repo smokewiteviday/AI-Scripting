@@ -7,25 +7,62 @@ public class TowerBehavior : MonoBehaviour
 
 {
       public float fireRate = 1f; // Time between shots
-    public Transform firePoint; // Where the projectile will spawn
-    public GameObject projectilePrefab; // Prefab of the projectile to spawn
+    public float range = 5f; // Target detection range
+    public GameObject projectilePrefab; // Projectile to fire
+    public Transform firePoint; // Where the projectile is fired from
 
-    private float fireCountdown = 0f;
+    private float fireCooldown = 0f;
 
-    void Update()
+    private void Update()
     {
-        if (fireCountdown <= 0f)
+        // Find the closest enemy
+        GameObject targetEnemy = FindClosestEnemy();
+        
+        if (targetEnemy != null)
         {
-            Shoot();
-            fireCountdown = 1f / fireRate;
+            // Rotate to face the enemy (optional for 2D towers)
+            Vector2 direction = (targetEnemy.transform.position - transform.position).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            // Shoot if cooldown is over
+            if (fireCooldown <= 0f)
+            {
+                Shoot(targetEnemy);
+                fireCooldown = 1f / fireRate;
+            }
         }
 
-        fireCountdown -= Time.deltaTime;
+        fireCooldown -= Time.deltaTime; // Cooldown timer
     }
 
-    void Shoot()
+    private GameObject FindClosestEnemy()
     {
-        Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject closest = null;
+        float shortestDistance = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
+        {
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance < shortestDistance && distance <= range)
+            {
+                shortestDistance = distance;
+                closest = enemy;
+            }
+        }
+
+        return closest;
+    }
+
+    private void Shoot(GameObject target)
+    {
+        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.SetTarget(target);
+        }
     }
 }
 
