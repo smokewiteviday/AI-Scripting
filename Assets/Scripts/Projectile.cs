@@ -5,12 +5,12 @@ public class Projectile : MonoBehaviour
     public float speed = 10f;
     public int damage = 20;
     private Transform target;
-    private ObjectPool pool;
+    //private ObjectPool pool;
 
-    public void Initialize(ObjectPool objectPool)
-    {
-        pool = objectPool;
-    }
+    //public void Initialize(ObjectPool objectPool)
+    //{
+    //    pool = objectPool;
+    //}
 
     public void SetTarget(GameObject targetObject)
     {
@@ -21,7 +21,7 @@ public class Projectile : MonoBehaviour
     {
         if (target == null)
         {
-            ReturnToPool();
+            //ReturnToPool();
             return;
         }
 
@@ -47,18 +47,25 @@ public class Projectile : MonoBehaviour
             
         }
 
-        ReturnToPool();
+        //ReturnToPool();
     }
 
-    private void ReturnToPool()
+    //private void ReturnToPool()
+    //{
+    //    if (pool != null)
+    //    {
+    //        pool.ReturnObject(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (pool != null)
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            pool.ReturnObject(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

@@ -3,41 +3,69 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    public GameObject prefab; // The prefab to pool
-    public int initialPoolSize = 20; // Initial number of objects in the pool
+    public static ObjectPool instance;
 
-    private Queue<GameObject> pool = new Queue<GameObject>();
-
-    private void Start()
+    public int amountToPool = 20; // Initial number of objects in the pool
+    private List<GameObject> pooledObjects = new List<GameObject>();
+    [SerializeField] public GameObject projectilePrefab; // The prefab to pool
+    private void Awake()
     {
-        // Pre-instantiate the pool objects
-        for (int i = 0; i < initialPoolSize; i++)
+        if (instance == null)
         {
-            GameObject obj = Instantiate(prefab);
+            instance = this;
+        }
+    }
+    void Start()
+    {
+        for (int i = 0; i < amountToPool; i++)
+        {
+            GameObject obj = Instantiate(projectilePrefab);
             obj.SetActive(false);
-            pool.Enqueue(obj);
+            pooledObjects.Add(obj);
         }
     }
-
-    public GameObject GetObject()
+    public GameObject GetPooledObject()
     {
-        if (pool.Count > 0)
+        for(int i = 0;i < pooledObjects.Count; i++)
         {
-            GameObject obj = pool.Dequeue();
-            obj.SetActive(true);
-            return obj;
-        }
-        else
-        {
-            // If the pool is empty, instantiate a new object
-            GameObject obj = Instantiate(prefab);
-            return obj;
-        }
-    }
+            if (!pooledObjects[i].activeInHierarchy)
+            {
+                return pooledObjects[i];
+            }
 
-    public void ReturnObject(GameObject obj)
-    {
-        obj.SetActive(false);
-        pool.Enqueue(obj);
+        }
+        return null;
     }
+    //private void Start()
+    //{
+    //    // Pre-instantiate the pool objects
+    //    for (int i = 0; i < initialPoolSize; i++)
+    //    {
+    //        GameObject obj = Instantiate(prefab);
+    //        obj.SetActive(false);
+    //        pool.Enqueue(obj);
+    //    }
+    //}
+
+    //public GameObject GetObject()
+    //{
+    //    if (pool.Count > 0)
+    //    {
+    //        GameObject obj = pool.Dequeue();
+    //        obj.SetActive(true);
+    //        return obj;
+    //    }
+    //    else
+    //    {
+    //        // If the pool is empty, instantiate a new object
+    //        GameObject obj = Instantiate(prefab);
+    //        return obj;
+    //    }
+    //}
+
+    //public void ReturnObject(GameObject obj)
+    //{
+    //    obj.SetActive(false);
+    //    pool.Enqueue(obj);
+    //}
 }

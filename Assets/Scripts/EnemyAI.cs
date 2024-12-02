@@ -67,19 +67,19 @@ public class EnemyAI : MonoBehaviour
         health -= damage;
         if (health <= 0)
         {
-            ReturnToPool();
+            //ReturnToPool();
         }
     }
 
-    private void ReturnToPool()
-    {
-        if (pool != null)
-        {
-            pool.ReturnObject(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    //private void ReturnToPool()
+    //{
+    //    if (pool != null)
+    //    {
+    //        pool.ReturnObject(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
 }
