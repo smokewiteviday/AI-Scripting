@@ -1,23 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-public class TowerBehavior : MonoBehaviour
-
+public class TowerAI : MonoBehaviour
 {
-      public float fireRate = 1f; // Time between shots
+    public float fireRate = 1f; // Time between shots
     public float range = 5f; // Target detection range
-    public GameObject projectilePrefab; // Projectile to fire
     public Transform firePoint; // Where the projectile is fired from
 
-    private float fireCooldown = 0f;
+    public float fireCooldown = 0f;
+    private ObjectPool projectilePool;
+
+    private void Start()
+    {
+        // Find the object pool in the scene
+        projectilePool = FindObjectOfType<ObjectPool>();
+        if (projectilePool == null)
+        {
+            Debug.LogError("No ObjectPool found in the scene!");
+        }
+    }
 
     private void Update()
     {
-        // Find the closest enemy
         GameObject targetEnemy = FindClosestEnemy();
-        
+
         if (targetEnemy != null)
         {
             // Rotate to face the enemy (optional for 2D towers)
@@ -57,13 +62,18 @@ public class TowerBehavior : MonoBehaviour
 
     private void Shoot(GameObject target)
     {
-        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        if (projectilePool == null) return;
+
+        // Fetch a projectile from the pool
+        GameObject projectile = projectilePool.GetObject();
+        projectile.transform.position = firePoint.position;
+        projectile.transform.rotation = firePoint.rotation;
+
         Projectile projectileScript = projectile.GetComponent<Projectile>();
         if (projectileScript != null)
         {
-            projectileScript.SetTarget(target);
+            projectileScript.Initialize(projectilePool); // Assign the pool to the projectile
+            projectileScript.SetTarget(target); // Assign the target to the projectile
         }
     }
 }
-
-

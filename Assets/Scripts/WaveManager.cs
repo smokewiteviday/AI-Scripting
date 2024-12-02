@@ -5,6 +5,7 @@ public class WaveManager : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public int waveNumber = 1;
+    
 
     public void StartWave()
     {
@@ -24,6 +25,7 @@ public class WaveManager : MonoBehaviour
 
     private void SpawnEnemy()
     {
+
         Instantiate(enemyPrefab, transform.position, Quaternion.identity);
     }
 }

@@ -1,54 +1,85 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public float speed = 2f; // Movement speed toward the target
-    public float detectionRange = 10f; // Range within which the enemy detects buildings
+    public float speed = 2f;
+    public int health = 50;
+    private GameObject targetBuilding;
+    private ObjectPool pool;
 
-    private Transform target; // Current target (nearest building)
+    public void Initialize(ObjectPool objectPool)
+    {
+        pool = objectPool;
+    }
 
-    void Update()
+    private void Start()
     {
         UpdateTarget();
+    }
 
-        if (target != null)
+    private void Update()
+    {
+        if (targetBuilding == null)
         {
-            MoveTowardsTarget();
+            UpdateTarget(); // Find a new target if the current one is destroyed
+            return;
+        }
+
+        // Move towards the target building
+        Vector2 direction = (targetBuilding.transform.position - transform.position).normalized;
+        transform.Translate(direction * speed * Time.deltaTime);
+
+        // Check if reached the target
+        if (Vector2.Distance(transform.position, targetBuilding.transform.position) < 0.5f)
+        {
+            //AttackBuilding();
         }
     }
 
-    void UpdateTarget()
+    private void UpdateTarget()
     {
         GameObject[] buildings = GameObject.FindGameObjectsWithTag("Building");
         float shortestDistance = Mathf.Infinity;
-        GameObject nearestBuilding = null;
 
         foreach (GameObject building in buildings)
         {
-            float distanceToBuilding = Vector2.Distance(transform.position, building.transform.position);
-            if (distanceToBuilding < shortestDistance && distanceToBuilding <= detectionRange)
+            float distance = Vector2.Distance(transform.position, building.transform.position);
+            if (distance < shortestDistance)
             {
-                shortestDistance = distanceToBuilding;
-                nearestBuilding = building;
+                shortestDistance = distance;
+                targetBuilding = building;
             }
-        }
-
-        // Set the closest building within range as the target
-        if (nearestBuilding != null && shortestDistance <= detectionRange)
-        {
-            target = nearestBuilding.transform;
-        }
-        else
-        {
-            target = null; // No building within range
         }
     }
 
-    void MoveTowardsTarget()
+    //private void AttackBuilding()
+    //{
+    //    Building building = targetBuilding.GetComponent<Building>();
+    //    if (building != null)
+    //    {
+    //        building.TakeDamage(10); // Example damage value
+    //    }
+    //    ReturnToPool();
+    //}
+
+    public void TakeDamage(int damage)
     {
-        // Smoothly move towards the target
-        transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        health -= damage;
+        if (health <= 0)
+        {
+            ReturnToPool();
+        }
+    }
+
+    private void ReturnToPool()
+    {
+        if (pool != null)
+        {
+            pool.ReturnObject(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }
