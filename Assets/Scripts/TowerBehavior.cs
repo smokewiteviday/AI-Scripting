@@ -21,30 +21,21 @@ public class TowerAI : MonoBehaviour
 
     private void Update()
     {
-        //GameObject targetEnemy = FindClosestEnemy();
-
-        //if (targetEnemy != null)
-        //{
-        //    // Rotate to face the enemy (optional for 2D towers)
-        //    //Vector2 direction = (targetEnemy.transform.position - transform.position).normalized;
-        //    //float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        //    //transform.rotation = Quaternion.Euler(0, 0, angle);
-
-        //    // Shoot if cooldown is over
-        //    if (fireCooldown <= 0f)
-        //    {
-        //        Shoot(targetEnemy);
-        //        fireCooldown = 1f / fireRate;
-        //    }
-        //}
-
+        GameObject targetEnemy = FindClosestEnemy();
         fireCooldown -= Time.deltaTime; // Cooldown timer
-
-        if (fireCooldown <= 0f)
+        if (targetEnemy != null)
         {
-            Debug.Log("Shoot");
-            Shoot(FindClosestEnemy());
-            fireCooldown = 1f / fireRate;
+        // Rotate to face the enemy (optional for 2D towers)
+            Vector2 direction = (targetEnemy.transform.position - transform.position).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        // Shoot if cooldown is over
+            if (fireCooldown <= 0f)
+            {
+               Shoot(targetEnemy);
+               fireCooldown = 1f / fireRate;
+            }
         }
     }
 
@@ -68,21 +59,16 @@ public class TowerAI : MonoBehaviour
 
     private void Shoot(GameObject target)
     {
-        //if (projectilePool == null) return;
-
         // Fetch a projectile from the pool
         GameObject projectile = projectilePool.GetPooledObject();
-        //projectile.transform.position = firePoint.position;
-        //projectile.transform.rotation = firePoint.rotation;
-
         Projectile projectileScript = projectile.GetComponent<Projectile>();
         if (projectileScript != null)
         {
             projectile.SetActive(true);
             projectile.transform.position = transform.position;
-            //projectileScript.Initialize(projectilePool); // Assign the pool to the projectile
             projectileScript.SetTarget(target); // Assign the target to the projectile
           
         }
+        else { projectile.SetActive(false); }
     }
 }

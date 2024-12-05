@@ -7,7 +7,7 @@ public class ObjectPool : MonoBehaviour
 
     public int amountToPool = 20; // Initial number of objects in the pool
     private List<GameObject> pooledObjects = new List<GameObject>();
-    [SerializeField] public GameObject projectilePrefab; // The prefab to pool
+    [SerializeField] private GameObject projectilePrefab; // The prefab to pool
     private void Awake()
     {
         if (instance == null)

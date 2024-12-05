@@ -5,12 +5,7 @@ public class Projectile : MonoBehaviour
     public float speed = 10f;
     public int damage = 20;
     private Transform target;
-    //private ObjectPool pool;
-
-    //public void Initialize(ObjectPool objectPool)
-    //{
-    //    pool = objectPool;
-    //}
+    
 
     public void SetTarget(GameObject targetObject)
     {
@@ -21,7 +16,6 @@ public class Projectile : MonoBehaviour
     {
         if (target == null)
         {
-            //ReturnToPool();
             return;
         }
 
@@ -31,41 +25,28 @@ public class Projectile : MonoBehaviour
 
         if (direction.magnitude <= distanceThisFrame)
         {
-            HitTarget();
+          
             return;
         }
 
         transform.Translate(direction.normalized * distanceThisFrame, Space.World);
     }
 
-    private void HitTarget()
-    {
-        EnemyAI enemy = target.GetComponent<EnemyAI>();
-        if (enemy != null)
-        {
-            //enemy.TakeDamage(damage);
-            
-        }
 
-        //ReturnToPool();
-    }
-
-    //private void ReturnToPool()
-    //{
-    //    if (pool != null)
-    //    {
-    //        pool.ReturnObject(gameObject);
-    //    }
-    //    else
-    //    {
-    //        Destroy(gameObject);
-    //    }
-    //}
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
+            
             gameObject.SetActive(false);
+            EnemyAI enemy = target.GetComponent<EnemyAI>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+
+            }
+            Debug.Log("F");
         }
     }
+    
 }

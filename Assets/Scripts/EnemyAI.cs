@@ -3,18 +3,14 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     public float speed = 2f;
-    public int health = 50;
+    public int health;
     private GameObject targetBuilding;
-    private ObjectPool pool;
-
-    public void Initialize(ObjectPool objectPool)
-    {
-        pool = objectPool;
-    }
+    
 
     private void Start()
     {
         UpdateTarget();
+        health = 50;
     }
 
     private void Update()
@@ -59,27 +55,19 @@ public class EnemyAI : MonoBehaviour
     //    {
     //        building.TakeDamage(10); // Example damage value
     //    }
-    //    ReturnToPool();
+    //    
     //}
 
     public void TakeDamage(int damage)
     {
         health -= damage;
+        Debug.Log(health);
         if (health <= 0)
         {
-            //ReturnToPool();
+            Destroy(gameObject);
+            
         }
     }
 
-    //private void ReturnToPool()
-    //{
-    //    if (pool != null)
-    //    {
-    //        pool.ReturnObject(gameObject);
-    //    }
-    //    else
-    //    {
-    //        Destroy(gameObject);
-    //    }
-    //}
+    
 }
