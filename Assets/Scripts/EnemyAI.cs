@@ -60,13 +60,16 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        TowerAI towerAI= GetComponent<TowerAI>();
         health -= damage;
         Debug.Log(health);
         if (health <= 0)
         {
             Destroy(gameObject);
-            
+            towerAI.enemiesLeftToUpgrade -= 1;
+            Debug.Log(towerAI.enemiesLeftToUpgrade);
         }
+        
     }
 
     

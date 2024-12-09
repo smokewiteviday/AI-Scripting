@@ -480,14 +480,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1755734992877825252, guid: f351aff963998c247915bb93befb3558, type: 3}
-      propertyPath: fireRate
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1755734992877825252, guid: f351aff963998c247915bb93befb3558, type: 3}
-      propertyPath: fireCooldown
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1755734992877825252, guid: f351aff963998c247915bb93befb3558, type: 3}
       propertyPath: projectilePool
       value: 
       objectReference: {fileID: 384794652}
@@ -497,11 +489,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4130377337948322124, guid: f351aff963998c247915bb93befb3558, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.86
+      value: -3.89
       objectReference: {fileID: 0}
     - target: {fileID: 4130377337948322124, guid: f351aff963998c247915bb93befb3558, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6
+      value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4130377337948322124, guid: f351aff963998c247915bb93befb3558, type: 3}
       propertyPath: m_LocalPosition.z
@@ -533,14 +525,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4130377337948322124, guid: f351aff963998c247915bb93befb3558, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5533142665308478204, guid: f351aff963998c247915bb93befb3558, type: 3}
-      propertyPath: m_Size.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5533142665308478204, guid: f351aff963998c247915bb93befb3558, type: 3}
-      propertyPath: m_Offset.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

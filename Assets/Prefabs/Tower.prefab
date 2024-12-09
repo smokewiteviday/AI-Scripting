@@ -119,7 +119,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.21133333}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -144,10 +144,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1932ffab98595f94e8421db1d58723c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireRate: 100
+  fireRate: 1
   range: 10
-  firePoint: {fileID: 6437145720473795704, guid: 84102224ad3b1a047beb1468b11aa63b, type: 3}
-  fireCooldown: 10
+  fireCooldown: 2
   projectilePool: {fileID: 7831258693481400075, guid: 2fb5cc13a9659374596d946dd5f4d6c2, type: 3}
 --- !u!50 &8872969199692572955
 Rigidbody2D:

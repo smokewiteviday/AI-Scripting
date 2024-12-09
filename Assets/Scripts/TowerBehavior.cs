@@ -1,12 +1,15 @@
+using System;
 using UnityEngine;
 
 public class TowerAI : MonoBehaviour
 {
+    enum TowerState { Idle, Attack, Upgrade}
+    TowerState state;
+    bool stateComplete;
     public float fireRate = 1f; // Time between shots
     public float range = 5f; // Target detection range
-    public Transform firePoint; // Where the projectile is fired from
-
     public float fireCooldown = 0f;
+    public int enemiesLeftToUpgrade = 10;
     [SerializeField] private ObjectPool projectilePool;
 
     private void Start()
@@ -21,25 +24,14 @@ public class TowerAI : MonoBehaviour
 
     private void Update()
     {
-        GameObject targetEnemy = FindClosestEnemy();
-        fireCooldown -= Time.deltaTime; // Cooldown timer
-        if (targetEnemy != null)
-        {
-        // Rotate to face the enemy (optional for 2D towers)
-            Vector2 direction = (targetEnemy.transform.position - transform.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
-
-        // Shoot if cooldown is over
-            if (fireCooldown <= 0f)
-            {
-               Shoot(targetEnemy);
-               fireCooldown = 1f / fireRate;
-            }
+       
+        if (stateComplete) {
+            SelectState();
         }
+        UpdateState();
     }
 
-    private GameObject FindClosestEnemy()
+    protected GameObject FindClosestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         GameObject closest = null;
@@ -71,4 +63,77 @@ public class TowerAI : MonoBehaviour
         }
         else { projectile.SetActive(false); }
     }
+    
+    void SelectState()
+    {
+        stateComplete = false;
+        if (FindClosestEnemy() != null)
+        {
+            state=TowerState.Attack;
+            StartAttack();
+        }
+        else { 
+            state=TowerState.Idle;
+            StartIdle();
+        }
+    }
+    void UpdateState()
+    {
+        switch (state)
+        {
+            case TowerState.Idle:
+                UpdateIdle();
+                break;
+            case TowerState.Attack:
+                UpdateAttack();
+                break;
+            case TowerState.Upgrade:
+                UpdateUpgrade();
+                break;
+        }
+    }
+    private void StartIdle()
+    {
+
+    }
+    private void StartAttack()
+    {
+        GameObject targetEnemy = FindClosestEnemy();
+        fireCooldown -= Time.deltaTime; // Cooldown timer
+        if (targetEnemy != null)
+        {
+            // Rotate to face the enemy (optional for 2D towers)
+            Vector2 direction = (targetEnemy.transform.position - transform.position).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            // Shoot if cooldown is over
+            if (fireCooldown <= 0f)
+            {
+                Shoot(targetEnemy);
+                fireCooldown = 1f / fireRate;
+            }
+        }
+    }
+    private void StartUpgrade()
+    {
+
+    }
+    private void UpdateIdle()
+    {
+        stateComplete = true;
+    }
+    private void UpdateAttack()
+    {
+        if (FindClosestEnemy() != null)
+        {
+            stateComplete = true;
+        }
+    }
+    private void UpdateUpgrade()
+    {
+        
+    }
+    
+
 }
