@@ -3,14 +3,15 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     public float speed = 2f;
-    public int health;
+    private int currentHealth;
+    public int maxHealth=50;
     private GameObject targetBuilding;
     
 
     private void Start()
     {
         UpdateTarget();
-        health = 50;
+        currentHealth=maxHealth;
     }
 
     private void Update()
@@ -60,11 +61,13 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
-        Debug.Log(health);
-        if (health <= 0)
+        currentHealth -= damage;
+        Debug.Log(currentHealth);
+        
+      
+        if (currentHealth <= 0)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
             
         }
     }

@@ -44,5 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ff26c59fafb5db46a6574ffafaca4e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amountToPool: 20
+  amountToPool: 10
   projectilePrefab: {fileID: 4135926322913832084, guid: ddc5452b9579b1f4593abc35373397a9, type: 3}
+  enemyPrefab: {fileID: 9137565934113363941, guid: 84102224ad3b1a047beb1468b11aa63b, type: 3}
