@@ -3,44 +3,29 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    //public GameObject enemyPrefab;
-    //public int waveNumber = 1;
-    [SerializeField] private ObjectPool enemyPool;
+    public GameObject enemyPrefab;
+    public int waveNumber = 1;
+    
 
-    //public void StartWave()
-    //{
-    //    StartCoroutine(SpawnWave());
-    //}
-
-    //private IEnumerator SpawnWave()
-    //{
-    //    int enemyCount = 1; // Example scaling formula
-    //    for (int i = 0; i < enemyCount; i++)
-    //    {
-    //        SpawnEnemy();
-    //        yield return new WaitForSeconds(1f);
-    //    }
-    //    waveNumber++;
-    //}
-    void Update()
+    public void StartWave()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Debug.Log("Q");
-            SpawnEnemy();
-        }
+        StartCoroutine(SpawnWave());
     }
-    public void SpawnEnemy()
+
+    private IEnumerator SpawnWave()
     {
-        GameObject enemy = enemyPool.GetPooledObject();
-        
-        if (enemy != null)
+        int enemyCount = waveNumber * 3; // Example scaling formula
+        for (int i = 0; i < enemyCount; i++)
         {
-            enemy.SetActive(true);
-            enemy.transform.position = transform.position;
-            
+            SpawnEnemy();
+            yield return new WaitForSeconds(1f);
         }
-        
-       
+        waveNumber++;
+    }
+
+    private void SpawnEnemy()
+    {
+
+        Instantiate(enemyPrefab, transform.position, Quaternion.identity);
     }
 }

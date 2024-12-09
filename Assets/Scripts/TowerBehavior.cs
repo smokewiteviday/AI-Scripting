@@ -12,11 +12,11 @@ public class TowerAI : MonoBehaviour
     private void Start()
     {
         // Find the object pool in the scene
-        //projectilePool = FindObjectOfType<ObjectPool>();
-        //if (projectilePool == null)
-        //{
-        //    Debug.LogError("No ObjectPool found in the scene!");
-        //}
+        projectilePool = FindObjectOfType<ObjectPool>();
+        if (projectilePool == null)
+        {
+            Debug.LogError("No ObjectPool found in the scene!");
+        }
     }
 
     private void Update()

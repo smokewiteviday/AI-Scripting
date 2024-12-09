@@ -45,6 +45,7 @@ public class Projectile : MonoBehaviour
                 enemy.TakeDamage(damage);
 
             }
+            Debug.Log("F");
         }
     }
     
