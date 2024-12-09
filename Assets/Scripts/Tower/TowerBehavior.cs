@@ -1,7 +1,12 @@
+using System;
 using UnityEngine;
 
 public class TowerAI : MonoBehaviour
 {
+    enum TowerState { Idle, Attacking, Upgrade}
+
+    TowerState state;
+    bool stateComplete;
     public float fireRate = 1f; // Time between shots
     public float range = 5f; // Target detection range
     public Transform firePoint; // Where the projectile is fired from
@@ -70,5 +75,39 @@ public class TowerAI : MonoBehaviour
           
         }
         else { projectile.SetActive(false); }
+    }
+    void SelectState()
+    {
+
+    }
+    void UpdateState()
+    {
+        switch (state)
+        {
+            case TowerState.Idle:
+                UpdateIdle();
+                break;
+            case TowerState.Attacking:
+                UpdateAttack();
+                break;
+            case TowerState.Upgrade:
+                UpdateUpgrade();
+                break;
+        }
+    }
+
+    private void UpdateUpgrade()
+    {
+        
+    }
+
+    private void UpdateAttack()
+    {
+       
+    }
+
+    private void UpdateIdle()
+    {
+        
     }
 }
