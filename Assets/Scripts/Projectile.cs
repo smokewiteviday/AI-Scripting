@@ -40,12 +40,20 @@ public class Projectile : MonoBehaviour
             
             gameObject.SetActive(false);
             EnemyAI enemy = target.GetComponent<EnemyAI>();
+            TowerAI towerAI = GetComponent<TowerAI>();
+
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
 
             }
-            Debug.Log("F");
+            if (enemy.currentHealth <= 0)
+            {
+                enemy.Die();
+                towerAI.enemiesLeftToUpgrade--;
+               
+            }
+           
         }
     }
     

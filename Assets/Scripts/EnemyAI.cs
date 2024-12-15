@@ -3,14 +3,15 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     public float speed = 2f;
-    public int health;
+    public int currentHealth;
+    public int maxHealth=50;
     private GameObject targetBuilding;
     
 
     private void Start()
     {
         UpdateTarget();
-        health = 50;
+        currentHealth=maxHealth;
     }
 
     private void Update()
@@ -60,17 +61,15 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        TowerAI towerAI= GetComponent<TowerAI>();
-        health -= damage;
-        Debug.Log(health);
-        if (health <= 0)
-        {
-            Destroy(gameObject);
-            towerAI.enemiesLeftToUpgrade -= 1;
-            Debug.Log(towerAI.enemiesLeftToUpgrade);
-        }
+       
+        currentHealth -= damage;
+        Debug.Log(currentHealth);
         
     }
+    public void Die()
+    {   
 
+        Destroy(gameObject); 
+    }
     
 }

@@ -10,6 +10,7 @@ public class TowerAI : MonoBehaviour
     public float range = 5f; // Target detection range
     public float fireCooldown = 0f;
     public int enemiesLeftToUpgrade = 10;
+    private int enemiesKilled;
     [SerializeField] private ObjectPool projectilePool;
 
     private void Start()
@@ -24,7 +25,10 @@ public class TowerAI : MonoBehaviour
 
     private void Update()
     {
-       
+        if (enemiesLeftToUpgrade!=10)
+        {
+            Debug.Log(enemiesLeftToUpgrade);
+        }
         if (stateComplete) {
             SelectState();
         }
@@ -62,8 +66,11 @@ public class TowerAI : MonoBehaviour
           
         }
         else { projectile.SetActive(false); }
+    }   
+    public void OnEnemyKilled()
+    {
+        enemiesKilled++;
     }
-    
     void SelectState()
     {
         stateComplete = false;
@@ -71,6 +78,11 @@ public class TowerAI : MonoBehaviour
         {
             state=TowerState.Attack;
             StartAttack();
+        }
+        if (enemiesLeftToUpgrade <= 0)
+        {
+            state = TowerState.Upgrade;
+            StartUpgrade();
         }
         else { 
             state=TowerState.Idle;
@@ -117,7 +129,7 @@ public class TowerAI : MonoBehaviour
     }
     private void StartUpgrade()
     {
-
+        
     }
     private void UpdateIdle()
     {
@@ -132,7 +144,7 @@ public class TowerAI : MonoBehaviour
     }
     private void UpdateUpgrade()
     {
-        
+        stateComplete = true;
     }
     
 
