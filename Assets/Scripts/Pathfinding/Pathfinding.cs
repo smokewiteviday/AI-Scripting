@@ -11,30 +11,29 @@ public class Pathfinding : MonoBehaviour
         gridSystem = FindObjectOfType<GridSystem>();
     }
 
+    // Finds the path from start to target.
     public List<Cell> FindPath(Vector3 startWorldPosition, Vector3 targetWorldPosition)
     {
-        Cell[,] grid = gridSystem.GetGrid();
         Cell startCell = gridSystem.GetCellFromWorldPosition(startWorldPosition);
         Cell targetCell = gridSystem.GetCellFromWorldPosition(targetWorldPosition);
 
         if (startCell == null || targetCell == null || !targetCell.IsWalkable) return null;
 
-        List<Cell> openSet = new List<Cell>();
-        HashSet<Cell> closedSet = new HashSet<Cell>();
-        openSet.Add(startCell);
+        List<Cell> openList = new List<Cell> { startCell };
+        List<Cell> closedSet = new List<Cell>();
 
-        while (openSet.Count > 0)
+        while (openList.Count > 0)
         {
-            Cell currentCell = openSet[0];
-            for (int i = 1; i < openSet.Count; i++)
+            Cell currentCell = openList[0];
+            foreach (Cell cell in openList)
             {
-                if (openSet[i].FCost < currentCell.FCost || (openSet[i].FCost == currentCell.FCost && openSet[i].HCost < currentCell.HCost))
+                if (cell.FCost < currentCell.FCost || (cell.FCost == currentCell.FCost && cell.HCost < currentCell.HCost))
                 {
-                    currentCell = openSet[i];
+                    currentCell = cell;
                 }
             }
 
-            openSet.Remove(currentCell);
+            openList.Remove(currentCell);
             closedSet.Add(currentCell);
 
             if (currentCell == targetCell)
@@ -47,38 +46,41 @@ public class Pathfinding : MonoBehaviour
                 if (!neighbor.IsWalkable || closedSet.Contains(neighbor)) continue;
 
                 int newCostToNeighbor = currentCell.GCost + GetDistance(currentCell, neighbor);
-                if (newCostToNeighbor < neighbor.GCost || !openSet.Contains(neighbor))
+
+                if (newCostToNeighbor < neighbor.GCost || !openList.Contains(neighbor))
                 {
                     neighbor.GCost = newCostToNeighbor;
                     neighbor.HCost = GetDistance(neighbor, targetCell);
                     neighbor.Parent = currentCell;
 
-                    if (!openSet.Contains(neighbor)) openSet.Add(neighbor);
+                    if (!openList.Contains(neighbor)) openList.Add(neighbor);
                 }
             }
         }
         return null;
     }
 
-    List<Cell> RetracePath(Cell startCell, Cell endCell)
+    // Retraces the path by following parent links.
+    private List<Cell> RetracePath(Cell startCell, Cell targetCell)
     {
         List<Cell> path = new List<Cell>();
-        Cell currentCell = endCell;
+        Cell currentCell = targetCell;
 
         while (currentCell != startCell)
         {
             path.Add(currentCell);
             currentCell = currentCell.Parent;
         }
+
         path.Reverse();
         return path;
     }
 
-    int GetDistance(Cell a, Cell b)
+    // Calculates Manhattan distance.
+    private int GetDistance(Cell a, Cell b)
     {
-        int dstX = Mathf.Abs(a.GridX - b.GridX);
-        int dstY = Mathf.Abs(a.GridY - b.GridY);
-
-        return dstX + dstY;
+        int dx = Mathf.Abs(a.GridX - b.GridX);
+        int dy = Mathf.Abs(a.GridY - b.GridY);
+        return dx + dy;
     }
 }

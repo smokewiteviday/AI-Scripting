@@ -16,7 +16,8 @@ public class GridSystem : MonoBehaviour
         GenerateGrid();
     }
 
-    void GenerateGrid()
+    // Generates the grid by instantiating cells.
+    private void GenerateGrid()
     {
         grid = new Cell[gridWidth, gridHeight];
         for (int x = 0; x < gridWidth; x++)
@@ -32,11 +33,13 @@ public class GridSystem : MonoBehaviour
         }
     }
 
+    // Converts grid coordinates to world position.
     public Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x * cellSize, y * cellSize, 0);
     }
 
+    // Retrieves the cell at a specific world position.
     public Cell GetCellFromWorldPosition(Vector3 worldPosition)
     {
         int x = Mathf.RoundToInt(worldPosition.x / cellSize);
@@ -49,6 +52,7 @@ public class GridSystem : MonoBehaviour
         return null;
     }
 
+    // Returns the neighboring cells of a given cell.
     public List<Cell> GetNeighbors(Cell cell)
     {
         List<Cell> neighbors = new List<Cell>();
@@ -56,7 +60,8 @@ public class GridSystem : MonoBehaviour
         {
             for (int dy = -1; dy <= 1; dy++)
             {
-                if (dx == 0 && dy == 0) continue;
+                if (dx == 0 && dy == 0) continue; // Skip the cell itself.
+
                 int x = cell.GridX + dx;
                 int y = cell.GridY + dy;
 
@@ -68,6 +73,4 @@ public class GridSystem : MonoBehaviour
         }
         return neighbors;
     }
-
-    public Cell[,] GetGrid() => grid;
 }

@@ -10,17 +10,18 @@ public class Cell : MonoBehaviour
     public int GridX { get; private set; }
     public int GridY { get; private set; }
 
-    public int GCost { get; set; }
-    public int HCost { get; set; }
-    public Cell Parent { get; set; }
+    public int GCost { get; set; } // Cost from start cell.
+    public int HCost { get; set; } // Heuristic cost to target cell.
+    public Cell Parent { get; set; } // Cell to trace the path back.
 
-    public int FCost => GCost + HCost;
+    public int FCost => GCost + HCost; // Total cost.
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    // Initializes the cell with grid coordinates and walkability.
     public void Initialize(int gridX, int gridY, bool isWalkable)
     {
         GridX = gridX;
@@ -28,6 +29,7 @@ public class Cell : MonoBehaviour
         SetWalkable(isWalkable);
     }
 
+    // Sets walkability and updates the visual appearance.
     public void SetWalkable(bool isWalkable)
     {
         IsWalkable = isWalkable;
