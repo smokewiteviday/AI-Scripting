@@ -8,26 +8,28 @@ public class GridSystem : MonoBehaviour
     public int gridHeight = 10;
     public float cellSize = 1f;
     public GameObject cellPrefab;
-
+    public GameObject turretPrefab; // Prefab for the turret to be placed on unwalkable cells.
+    public int turretRange = 2; // The range of the turret in grid cells.
     private Cell[,] grid;
 
     private int[,] testMap = new int[10, 10] // Test map: 1 = walkable, 0 = unwalkable
    {
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 1, 1, 0, 0, 0, 0, 0, 1, 1 },
-        { 1, 1, 1, 0, 1, 1, 1, 0, 1, 1 },
-        { 1, 1, 1, 0, 1, 0, 1, 0, 1, 1 },
-        { 0, 0, 0, 0, 1, 0, 1, 0, 1, 1 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 },
+        { 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 },
+        { 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 },
         { 1, 1, 1, 1, 1, 0, 1, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 },
-        { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
    };
 
     private void Start()
     {
         GenerateGrid();
+        PlaceTurrets();
     }
 
     // Generates the grid by instantiating cells.
@@ -49,13 +51,13 @@ public class GridSystem : MonoBehaviour
     }
 
     // Converts grid coordinates to world position.
-    public Vector3 GetWorldPosition(int x, int y)
+    public Vector2 GetWorldPosition(int x, int y)
     {
-        return new Vector3(x * cellSize, y * cellSize, 0);
+        return new Vector2(x * cellSize, y * cellSize );
     }
 
     // Retrieves the cell at a specific world position.
-    public Cell GetCellFromWorldPosition(Vector3 worldPosition)
+    public Cell GetCellFromWorldPosition(Vector2 worldPosition)
     {
         int x = Mathf.RoundToInt(worldPosition.x / cellSize);
         int y = Mathf.RoundToInt(worldPosition.y / cellSize);
@@ -88,6 +90,86 @@ public class GridSystem : MonoBehaviour
         }
         return neighbors;
     }
+    private void PlaceTurrets()
+    {
+        // List to store all unwalkable cells and their coverage.
+        List<(Cell cell, int coveredCells)> unwalkableCells = new List<(Cell, int)>();
+
+        // Loop through all cells in the grid.
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                Cell cell = grid[x, y];
+
+                // Only consider unwalkable cells for turret placement.
+                if (!cell.IsWalkable)
+                {
+                    // Calculate how many walkable cells are within range of this cell.
+                    int coveredCells = CalculateCoveredWalkableCells(cell);
+
+                    // Add the unwalkable cell and its coverage to the list.
+                    unwalkableCells.Add((cell, coveredCells));
+                }
+            }
+        }
+
+        // Sort the unwalkable cells by the number of covered walkable cells in descending order.
+        unwalkableCells.Sort((a, b) => b.coveredCells.CompareTo(a.coveredCells));
+
+        // Place up to three turrets on the best unwalkable cells.
+        int turretsPlaced = 0;
+        for (int i = 0; i < unwalkableCells.Count && turretsPlaced < 3; i++)
+        {
+            Cell bestCell = unwalkableCells[i].cell;
+
+            // Get the world position of the cell.
+            Vector3 turretPosition = GetWorldPosition(bestCell.GridX, bestCell.GridY);
+
+            // Instantiate the turret prefab at the cell's position.
+            Instantiate(turretPrefab, turretPosition, Quaternion.identity);
+
+            // Log the placement for debugging.
+            Debug.Log($"Turret {turretsPlaced + 1} placed at: {bestCell.GridX}, {bestCell.GridY}, covering {unwalkableCells[i].coveredCells} walkable cells.");
+
+            turretsPlaced++;
+        }
+
+        // If no turrets could be placed, log a message.
+        if (turretsPlaced == 0)
+        {
+            Debug.LogWarning("No suitable unwalkable cells found for turret placement!");
+        }
+    }
+
+    // Calculates the number of walkable cells within the turret's range for a given center cell.
+    private int CalculateCoveredWalkableCells(Cell centerCell)
+    {
+        int coveredCells = 0; // Counter for walkable cells within range.
+
+        // Loop through all positions within the range.
+        for (int dx = -turretRange; dx <= turretRange; dx++)
+        {
+            for (int dy = -turretRange; dy <= turretRange; dy++)
+            {
+                int x = centerCell.GridX + dx;
+                int y = centerCell.GridY + dy;
+
+                // Ensure the position is within grid bounds.
+                if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight)
+                {
+                    // If the cell at this position is walkable, increment the counter.
+                    if (grid[x, y].IsWalkable)
+                    {
+                        coveredCells++;
+                    }
+                }
+            }
+        }
+
+        return coveredCells; // Return the total count of covered walkable cells.
+    }
+
     private void OnDrawGizmos()
     {
        
