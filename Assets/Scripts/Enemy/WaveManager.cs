@@ -65,6 +65,6 @@ public class WaveManager : MonoBehaviour
     {
         Debug.Log("Spawn Enemy");
         GameObject prefabToSpawn = enemyPrefab[0];
-        Instantiate(prefabToSpawn);
+        Instantiate(prefabToSpawn, this.transform.position,Quaternion.identity);
     }
 }
