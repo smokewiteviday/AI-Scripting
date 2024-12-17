@@ -172,6 +172,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 871366312938935915, guid: cc396012177159248865d549b2d3b650, type: 3}
   turretPrefab: {fileID: 4035741366737655657, guid: f351aff963998c247915bb93befb3558, type: 3}
   turretRange: 2
+  spawnerPrefab: {fileID: 8912126599181032594, guid: 4504da6cc46dada4d95b5934be58ab00, type: 3}
 --- !u!1 &318512427
 GameObject:
   m_ObjectHideFlags: 0

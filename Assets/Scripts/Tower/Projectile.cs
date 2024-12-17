@@ -50,7 +50,7 @@ public class Projectile : MonoBehaviour
             if (enemy.currentHealth <= 0)
             {
                 enemy.Die();
-                towerAI.enemiesLeftToUpgrade--;
+                
                
             }
            

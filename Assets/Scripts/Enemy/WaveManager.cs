@@ -17,7 +17,7 @@ public class WaveManager : MonoBehaviour
     private int enemiesAlive;
     private int enemiesLeftToSpawn;
     private bool isSpawning=false;
-    [SerializeField] private ObjectPool enemyPool;
+   
 
     private void Start()
     {

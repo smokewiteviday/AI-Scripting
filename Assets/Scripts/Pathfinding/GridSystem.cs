@@ -10,6 +10,7 @@ public class GridSystem : MonoBehaviour
     public GameObject cellPrefab;
     public GameObject turretPrefab; // Prefab for the turret to be placed on unwalkable cells.
     public int turretRange = 2; // The range of the turret in grid cells.
+    public GameObject spawnerPrefab;
     private Cell[,] grid;
 
     private int[,] testMap = new int[10, 10] // Test map: 1 = walkable, 0 = unwalkable
@@ -30,6 +31,7 @@ public class GridSystem : MonoBehaviour
     {
         GenerateGrid();
         PlaceTurrets();
+        PlaceEnemySpawner();
     }
 
     // Generates the grid by instantiating cells.
@@ -40,7 +42,7 @@ public class GridSystem : MonoBehaviour
         {
             for (int y = 0; y < gridHeight; y++)
             {
-                Vector3 worldPosition = GetWorldPosition(x, y);
+                Vector2 worldPosition = GetWorldPosition(x, y);
                 GameObject cellObj = Instantiate(cellPrefab, worldPosition, Quaternion.identity);
                 Cell cell = cellObj.GetComponent<Cell>();
                 bool isWalkable = testMap[y,x]==1;
@@ -168,6 +170,37 @@ public class GridSystem : MonoBehaviour
         }
 
         return coveredCells; // Return the total count of covered walkable cells.
+    }
+    // Places an enemy spawner at the starting walkable cell in the grid.
+    private void PlaceEnemySpawner()
+    {
+        // Loop through all cells in the grid.
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                Cell cell = grid[x, y];
+
+                // Check if the cell is walkable.
+                if (cell.IsWalkable)
+                {
+                    // Get the world position of the cell.
+                    Vector3 spawnerPosition = GetWorldPosition(cell.GridX, cell.GridY);
+
+                    // Instantiate the spawner prefab at the cell's position.
+                    Instantiate(spawnerPrefab, spawnerPosition, Quaternion.identity);
+
+                    // Log the placement for debugging.
+                    Debug.Log($"Enemy spawner placed at: {cell.GridX}, {cell.GridY}");
+
+                    // Exit the loop after placing the spawner.
+                    return;
+                }
+            }
+        }
+
+        // If no walkable cell was found, log a warning.
+        Debug.LogWarning("No walkable cells found for enemy spawner placement!");
     }
 
     private void OnDrawGizmos()
