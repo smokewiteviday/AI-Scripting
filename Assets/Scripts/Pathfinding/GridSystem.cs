@@ -11,6 +11,20 @@ public class GridSystem : MonoBehaviour
 
     private Cell[,] grid;
 
+    private int[,] testMap = new int[10, 10] // Test map: 1 = walkable, 0 = unwalkable
+   {
+        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 1, 1, 0, 0, 0, 0, 0, 1, 1 },
+        { 1, 1, 1, 0, 1, 1, 1, 0, 1, 1 },
+        { 1, 1, 1, 0, 1, 0, 1, 0, 1, 1 },
+        { 0, 0, 0, 0, 1, 0, 1, 0, 1, 1 },
+        { 1, 1, 1, 1, 1, 0, 1, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 },
+        { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },
+        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+   };
+
     private void Start()
     {
         GenerateGrid();
@@ -27,7 +41,8 @@ public class GridSystem : MonoBehaviour
                 Vector3 worldPosition = GetWorldPosition(x, y);
                 GameObject cellObj = Instantiate(cellPrefab, worldPosition, Quaternion.identity);
                 Cell cell = cellObj.GetComponent<Cell>();
-                cell.Initialize(x, y, true);
+                bool isWalkable = testMap[y,x]==1;
+                cell.Initialize(x, y, isWalkable);
                 grid[x, y] = cell;
             }
         }
@@ -72,5 +87,9 @@ public class GridSystem : MonoBehaviour
             }
         }
         return neighbors;
+    }
+    private void OnDrawGizmos()
+    {
+       
     }
 }

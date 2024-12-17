@@ -12,7 +12,7 @@ public class Pathfinding : MonoBehaviour
     }
 
     // Finds the path from start to target.
-    public List<Cell> FindPath(Vector3 startWorldPosition, Vector3 targetWorldPosition)
+    public List<Cell> FindPath(Vector2 startWorldPosition, Vector2 targetWorldPosition)
     {
         Cell startCell = gridSystem.GetCellFromWorldPosition(startWorldPosition);
         Cell targetCell = gridSystem.GetCellFromWorldPosition(targetWorldPosition);

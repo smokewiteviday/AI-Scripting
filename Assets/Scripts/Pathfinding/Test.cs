@@ -8,8 +8,8 @@ public class Test : MonoBehaviour
 
     private void Start()
     {
-        Vector3 start = new Vector3(0, 0, 0);
-        Vector3 target = new Vector3(5, 5, 0);
+        Vector2 start = new Vector2(0, 5);
+        Vector2 target = new Vector2(9, 6);
 
         var path = pathfinding.FindPath(start, target);
 
