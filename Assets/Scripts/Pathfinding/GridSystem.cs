@@ -16,7 +16,6 @@ public class GridSystem : MonoBehaviour
     public Vector2 end;
     public Pathfinding pathfinding;
     public GameObject enemyPrefab;
-    
 
     private int[,] testMap = new int[10, 10] // Test map: 1 = walkable, 0 = unwalkable
    {
@@ -211,7 +210,7 @@ public class GridSystem : MonoBehaviour
 
         // Instantiate the enemy
         GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-
+        
         // Find the path for the enemy to follow
         var path = pathfinding.FindPath(start, end);
 

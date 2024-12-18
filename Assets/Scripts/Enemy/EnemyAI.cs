@@ -1,8 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
+    enum EnemyState { Idle, Run, Upgrade, Die }
+    EnemyState state;
+    bool stateComplete;
+
+    [Header("Attributes")]
     public float baseMoveSpeed = 2f; // Base speed of the enemy
     public int baseHealth = 50; // Base health of the enemy
     private float currentMoveSpeed;
@@ -18,16 +24,26 @@ public class EnemyAI : MonoBehaviour
     // Boost multipliers (shared across all enemies)
     private static float healthMultiplier = 1f;
     private static float speedMultiplier = 1f;
-
+    private GameManager gameManager;
     private void Start()
     {
         // Apply initial health and speed based on the multipliers
         currentMoveSpeed = baseMoveSpeed * speedMultiplier;
         currentHealth = Mathf.RoundToInt(baseHealth * healthMultiplier);
+        gameManager = FindObjectOfType<GameManager>();
+        if (gameManager == null)
+        {
+            Debug.LogError("GameManager not found in the scene!");
+        }
     }
 
     private void Update()
     {
+        if (stateComplete)
+        {
+            SelectState();
+        }
+        UpdateState();
         if (isMoving)
         {
             MoveAlongPath();
@@ -71,8 +87,16 @@ public class EnemyAI : MonoBehaviour
 
     private void OnReachEnd()
     {
+
         isMoving = false;
-        Debug.Log("Enemy has reached the endpoint!");
+
+        // Notify the GameManager
+        if (gameManager != null)
+        {
+            gameManager.EnemyReachedEndpoint();
+        }
+
+        // Destroy the enemy
         Destroy(gameObject);
     }
 
@@ -96,5 +120,60 @@ public class EnemyAI : MonoBehaviour
         healthMultiplier += healthIncrease;
         speedMultiplier += speedIncrease;
         Debug.Log($"Boosts applied: HealthMultiplier={healthMultiplier}, SpeedMultiplier={speedMultiplier}");
+    }
+    void SelectState()
+    {
+        stateComplete = false;
+
+    }
+    void UpdateState()
+    {
+        switch (state)
+        {
+            case EnemyState.Idle:
+                UpdateIdle();
+                break;
+            case EnemyState.Run:
+                UpdateRun();
+                break;
+            case EnemyState.Upgrade:
+                UpdateUpgrade();
+                break;
+            case EnemyState.Die:
+                UpdateDie(); 
+                break;
+        }
+    }
+    private void StartIdle()
+    {
+
+    }
+    private void UpdateIdle()
+    {
+
+    }
+    private void StartRun()
+    {
+
+    }
+    private void UpdateRun()
+    {
+
+    }
+    private void StartUpgrade()
+    {
+
+    }
+    private void UpdateUpgrade()
+    {
+
+    }
+    private void StartDie()
+    {
+
+    }
+    private void UpdateDie()
+    {
+
     }
 }
