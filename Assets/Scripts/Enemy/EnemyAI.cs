@@ -5,36 +5,39 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     enum EnemyState { Idle, Run, Upgrade, Die }
-    EnemyState state;
-    bool stateComplete;
+    private EnemyState state = EnemyState.Idle;
+    private bool stateComplete = true;
 
     [Header("Attributes")]
-    public float baseMoveSpeed = 2f; // Base speed of the enemy
-    public int baseHealth = 50; // Base health of the enemy
+    public float baseMoveSpeed = 2f;
+    public int baseHealth = 50;
     private float currentMoveSpeed;
     public int currentHealth;
 
-    private List<Cell> path; // Path the enemy will follow
-    private int currentPathIndex; // Index of the current cell in the path
-    private bool isMoving = false; // Whether the enemy is currently moving
+    private List<Cell> path;
+    private int currentPathIndex;
+    private bool isMoving = false;
 
-    // Reference to the GridSystem (assign in the Inspector)
     public GridSystem gridSystem;
 
-    // Boost multipliers (shared across all enemies)
     private static float healthMultiplier = 1f;
     private static float speedMultiplier = 1f;
+
     private GameManager gameManager;
+
     private void Start()
     {
-        // Apply initial health and speed based on the multipliers
         currentMoveSpeed = baseMoveSpeed * speedMultiplier;
         currentHealth = Mathf.RoundToInt(baseHealth * healthMultiplier);
+
         gameManager = FindObjectOfType<GameManager>();
         if (gameManager == null)
         {
             Debug.LogError("GameManager not found in the scene!");
         }
+
+        // Start in Idle state initially
+        ChangeState(EnemyState.Idle);
     }
 
     private void Update()
@@ -44,10 +47,6 @@ public class EnemyAI : MonoBehaviour
             SelectState();
         }
         UpdateState();
-        if (isMoving)
-        {
-            MoveAlongPath();
-        }
     }
 
     public void Initialize(List<Cell> pathToFollow, GridSystem grid)
@@ -62,6 +61,86 @@ public class EnemyAI : MonoBehaviour
         gridSystem = grid;
         currentPathIndex = 0;
         isMoving = true;
+
+        // Start in Run state when initialized
+        ChangeState(EnemyState.Run);
+    }
+
+    private void SelectState()
+    {
+        // This can be expanded to make decisions based on certain conditions
+        if (state == EnemyState.Idle)
+        {
+            ChangeState(EnemyState.Run);
+        }
+    }
+
+    private void UpdateState()
+    {
+        switch (state)
+        {
+            case EnemyState.Idle:
+                UpdateIdle();
+                break;
+            case EnemyState.Run:
+                UpdateRun();
+                break;
+            case EnemyState.Upgrade:
+                UpdateUpgrade();
+                break;
+            case EnemyState.Die:
+                UpdateDie();
+                break;
+        }
+    }
+
+    private void ChangeState(EnemyState newState)
+    {
+        state = newState;
+        stateComplete = false;
+
+        switch (state)
+        {
+            case EnemyState.Idle:
+                StartIdle();
+                break;
+            case EnemyState.Run:
+                StartRun();
+                break;
+            case EnemyState.Upgrade:
+                StartUpgrade();
+                break;
+            case EnemyState.Die:
+                StartDie();
+                break;
+        }
+    }
+
+    // ===== STATE: IDLE =====
+    private void StartIdle()
+    {
+        Debug.Log("Enemy is now Idle.");
+        stateComplete = true;
+    }
+
+    private void UpdateIdle()
+    {
+        // Add behavior for idle if needed
+    }
+
+    // ===== STATE: RUN =====
+    private void StartRun()
+    {
+        Debug.Log("Enemy started running.");
+        isMoving = true;
+    }
+
+    private void UpdateRun()
+    {
+        if (isMoving)
+        {
+            MoveAlongPath();
+        }
     }
 
     private void MoveAlongPath()
@@ -87,25 +166,48 @@ public class EnemyAI : MonoBehaviour
 
     private void OnReachEnd()
     {
-
         isMoving = false;
-
-        // Notify the GameManager
         if (gameManager != null)
         {
             gameManager.EnemyReachedEndpoint();
         }
 
-        // Destroy the enemy
-        Destroy(gameObject);
+        ChangeState(EnemyState.Die);
     }
 
+    // ===== STATE: UPGRADE =====
+    private void StartUpgrade()
+    {
+        Debug.Log("Enemy is upgrading.");
+       
+        stateComplete = true;
+    }
+
+    private void UpdateUpgrade()
+    {
+        // Add behavior for upgrading if needed
+    }
+
+    // ===== STATE: DIE =====
+    private void StartDie()
+    {
+        Debug.Log("Enemy is dying.");
+        Die();
+    }
+
+    private void UpdateDie()
+    {
+        // This state completes immediately after starting
+        stateComplete = true;
+    }
+
+    // ===== UTILITIES =====
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
-            Die();
+            ChangeState(EnemyState.Die);
         }
     }
 
@@ -114,66 +216,10 @@ public class EnemyAI : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Static method to update global multipliers
     public static void IncreaseBoosts(float healthIncrease, float speedIncrease)
     {
         healthMultiplier += healthIncrease;
         speedMultiplier += speedIncrease;
         Debug.Log($"Boosts applied: HealthMultiplier={healthMultiplier}, SpeedMultiplier={speedMultiplier}");
-    }
-    void SelectState()
-    {
-        stateComplete = false;
-
-    }
-    void UpdateState()
-    {
-        switch (state)
-        {
-            case EnemyState.Idle:
-                UpdateIdle();
-                break;
-            case EnemyState.Run:
-                UpdateRun();
-                break;
-            case EnemyState.Upgrade:
-                UpdateUpgrade();
-                break;
-            case EnemyState.Die:
-                UpdateDie(); 
-                break;
-        }
-    }
-    private void StartIdle()
-    {
-
-    }
-    private void UpdateIdle()
-    {
-
-    }
-    private void StartRun()
-    {
-
-    }
-    private void UpdateRun()
-    {
-
-    }
-    private void StartUpgrade()
-    {
-
-    }
-    private void UpdateUpgrade()
-    {
-
-    }
-    private void StartDie()
-    {
-
-    }
-    private void UpdateDie()
-    {
-
     }
 }
