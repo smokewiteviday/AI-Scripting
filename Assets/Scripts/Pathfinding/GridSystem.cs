@@ -35,7 +35,7 @@ public class GridSystem : MonoBehaviour
     private void Start()
     {
         GenerateGrid();
-        PlaceTurrets();
+        StartCoroutine(PlaceTurretsOverTime());
         StartToEndPoint();
 
         StartCoroutine(SpawnEnemies());
@@ -99,55 +99,59 @@ public class GridSystem : MonoBehaviour
         }
         return neighbors;
     }
-    private void PlaceTurrets()
+    private IEnumerator PlaceTurretsOverTime()
     {
-        // List to store all unwalkable cells and their coverage.
+        // List to store all unwalkable cells and their coverage
         List<(Cell cell, int coveredCells)> unwalkableCells = new List<(Cell, int)>();
 
-        // Loop through all cells in the grid.
+        // Loop through all cells in the grid
         for (int x = 0; x < gridWidth; x++)
         {
             for (int y = 0; y < gridHeight; y++)
             {
                 Cell cell = grid[x, y];
 
-                // Only consider unwalkable cells for turret placement.
+                // Only consider unwalkable cells for turret placement
                 if (!cell.IsWalkable)
                 {
-                    // Calculate how many walkable cells are within range of this cell.
+                    // Calculate how many walkable cells are within range of this cell
                     int coveredCells = CalculateCoveredWalkableCells(cell);
 
-                    // Add the unwalkable cell and its coverage to the list.
+                    // Add the unwalkable cell and its coverage to the list
                     unwalkableCells.Add((cell, coveredCells));
                 }
             }
         }
 
-        // Sort the unwalkable cells by the number of covered walkable cells in descending order.
+        // Sort the unwalkable cells by the number of covered walkable cells in descending order
         unwalkableCells.Sort((a, b) => b.coveredCells.CompareTo(a.coveredCells));
 
-        // Place up to three turrets on the best unwalkable cells.
-        int turretsPlaced = 0;
-        for (int i = 0; i < unwalkableCells.Count && turretsPlaced < 3; i++)
+        int turretsPlaced = 0; // Counter for placed turrets
+
+        while (turretsPlaced < 10) // Adjust the number of turrets as needed
         {
-            Cell bestCell = unwalkableCells[i].cell;
+            if (turretsPlaced < unwalkableCells.Count)
+            {
+                Cell bestCell = unwalkableCells[turretsPlaced].cell;
 
-            // Get the world position of the cell.
-            Vector3 turretPosition = GetWorldPosition(bestCell.GridX, bestCell.GridY);
+                // Get the world position of the cell
+                Vector3 turretPosition = GetWorldPosition(bestCell.GridX, bestCell.GridY);
 
-            // Instantiate the turret prefab at the cell's position.
-            Instantiate(turretPrefab, turretPosition, Quaternion.identity);
+                // Instantiate the turret prefab at the cell's position
+                Instantiate(turretPrefab, turretPosition, Quaternion.identity);
 
-            // Log the placement for debugging.
-            Debug.Log($"Turret {turretsPlaced + 1} placed at: {bestCell.GridX}, {bestCell.GridY}, covering {unwalkableCells[i].coveredCells} walkable cells.");
+                Debug.Log($"Turret {turretsPlaced + 1} placed at: {bestCell.GridX}, {bestCell.GridY}, covering {unwalkableCells[turretsPlaced].coveredCells} walkable cells.");
 
-            turretsPlaced++;
-        }
+                turretsPlaced++;
+            }
+            else
+            {
+                Debug.LogWarning("No more suitable unwalkable cells for turret placement!");
+                break; // Exit the loop if there are no more suitable cells
+            }
 
-        // If no turrets could be placed, log a message.
-        if (turretsPlaced == 0)
-        {
-            Debug.LogWarning("No suitable unwalkable cells found for turret placement!");
+            // Wait for 10 seconds before placing the next turret
+            yield return new WaitForSeconds(5f);
         }
     }
 

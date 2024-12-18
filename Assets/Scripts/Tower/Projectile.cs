@@ -16,6 +16,7 @@ public class Projectile : MonoBehaviour
     {
         if (target == null)
         {
+            gameObject.SetActive(false);
             return;
         }
 

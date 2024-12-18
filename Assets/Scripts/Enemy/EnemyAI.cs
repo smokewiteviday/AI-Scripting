@@ -1,25 +1,39 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public float moveSpeed = 2f;
+    public float baseMoveSpeed = 2f; // Base speed of the enemy
+    public int baseHealth = 50; // Base health of the enemy
+    private float currentMoveSpeed;
     public int currentHealth;
-    public int maxHealth=50;
 
-    public float speed = 2f; // Speed of the enemy's movement
-    private List<Cell> path; // The path the enemy will follow
+    private List<Cell> path; // Path the enemy will follow
     private int currentPathIndex; // Index of the current cell in the path
     private bool isMoving = false; // Whether the enemy is currently moving
 
     // Reference to the GridSystem (assign in the Inspector)
     public GridSystem gridSystem;
+
+    // Boost multipliers (shared across all enemies)
+    private static float healthMultiplier = 1f;
+    private static float speedMultiplier = 1f;
+
     private void Start()
     {
-        currentHealth=maxHealth;
+        // Apply initial health and speed based on the multipliers
+        currentMoveSpeed = baseMoveSpeed * speedMultiplier;
+        currentHealth = Mathf.RoundToInt(baseHealth * healthMultiplier);
     }
-    // Initialize the enemy with the path to follow
+
+    private void Update()
+    {
+        if (isMoving)
+        {
+            MoveAlongPath();
+        }
+    }
+
     public void Initialize(List<Cell> pathToFollow, GridSystem grid)
     {
         if (pathToFollow == null || pathToFollow.Count == 0)
@@ -34,61 +48,53 @@ public class EnemyAI : MonoBehaviour
         isMoving = true;
     }
 
-    private void Update()
-    {
-        if (isMoving)
-        {
-            MoveAlongPath();
-        }
-    }
-
-    // Moves the enemy along the calculated path
     private void MoveAlongPath()
     {
         if (path == null || currentPathIndex >= path.Count)
         {
-            // Reached the endpoint
             OnReachEnd();
             return;
         }
 
-        // Get the target position from the current path cell
         Vector2 targetPosition = gridSystem.GetWorldPosition(
             path[currentPathIndex].GridX,
             path[currentPathIndex].GridY
         );
 
-        // Move towards the target position
-        transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, targetPosition, currentMoveSpeed * Time.deltaTime);
 
-        // Check if the enemy has reached the target position
         if ((Vector2)transform.position == targetPosition)
         {
             currentPathIndex++;
         }
     }
 
-    // Called when the enemy reaches the end of the path
     private void OnReachEnd()
     {
         isMoving = false;
         Debug.Log("Enemy has reached the endpoint!");
-
-        // Perform any desired actions (e.g., damage the player's base, destroy the enemy, etc.)
         Destroy(gameObject);
     }
 
     public void TakeDamage(int damage)
     {
-       
         currentHealth -= damage;
-        Debug.Log(currentHealth);
-        
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
     }
-    public void Die()
-    {   
 
-        Destroy(gameObject); 
+    public void Die()
+    {
+        Destroy(gameObject);
     }
-    
+
+    // Static method to update global multipliers
+    public static void IncreaseBoosts(float healthIncrease, float speedIncrease)
+    {
+        healthMultiplier += healthIncrease;
+        speedMultiplier += speedIncrease;
+        Debug.Log($"Boosts applied: HealthMultiplier={healthMultiplier}, SpeedMultiplier={speedMultiplier}");
+    }
 }
