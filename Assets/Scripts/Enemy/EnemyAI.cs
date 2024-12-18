@@ -15,7 +15,10 @@ public class EnemyAI : MonoBehaviour
 
     // Reference to the GridSystem (assign in the Inspector)
     public GridSystem gridSystem;
-
+    private void Start()
+    {
+        currentHealth=maxHealth;
+    }
     // Initialize the enemy with the path to follow
     public void Initialize(List<Cell> pathToFollow, GridSystem grid)
     {

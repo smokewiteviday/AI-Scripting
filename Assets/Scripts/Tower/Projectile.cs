@@ -37,10 +37,9 @@ public class Projectile : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            
             gameObject.SetActive(false);
             EnemyAI enemy = target.GetComponent<EnemyAI>();
-            TowerAI towerAI = GetComponent<TowerAI>();
+           
 
             if (enemy != null)
             {

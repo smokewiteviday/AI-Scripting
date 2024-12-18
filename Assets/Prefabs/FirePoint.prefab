@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1596493953993079672}
   - component: {fileID: 5533142665308478204}
   - component: {fileID: 1755734992877825252}
-  - component: {fileID: 8872969199692572955}
   m_Layer: 0
   m_Name: FirePoint
   m_TagString: Building
@@ -149,30 +148,3 @@ MonoBehaviour:
   fireCooldown: 2
   enemiesLeftToUpgrade: 10
   projectilePool: {fileID: 7831258693481400075, guid: 2fb5cc13a9659374596d946dd5f4d6c2, type: 3}
---- !u!50 &8872969199692572955
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4035741366737655657}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 7

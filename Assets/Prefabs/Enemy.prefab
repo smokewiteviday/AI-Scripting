@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7147932180773477198}
   - component: {fileID: -1846037941839887923}
   - component: {fileID: -5824218531363641783}
+  - component: {fileID: -8881453974331534383}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -136,5 +137,32 @@ MonoBehaviour:
   moveSpeed: 2
   currentHealth: 0
   maxHealth: 50
-  pathfinding: {fileID: 6440028799369983814, guid: dd251c47feab9d047a4c6514fea4b8fc, type: 3}
+  speed: 2
   gridSystem: {fileID: 7414738741252844484, guid: dd251c47feab9d047a4c6514fea4b8fc, type: 3}
+--- !u!50 &-8881453974331534383
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137565934113363941}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

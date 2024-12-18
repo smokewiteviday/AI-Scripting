@@ -25,10 +25,7 @@ public class TowerAI : MonoBehaviour
 
     private void Update()
     {
-        if (enemiesLeftToUpgrade!=10)
-        {
-            Debug.Log(enemiesLeftToUpgrade);
-        }
+       
         if (stateComplete) {
             SelectState();
         }
@@ -67,10 +64,7 @@ public class TowerAI : MonoBehaviour
         }
         else { projectile.SetActive(false); }
     }   
-    public void OnEnemyKilled()
-    {
-        enemiesKilled++;
-    }
+   
     void SelectState()
     {
         stateComplete = false;
