@@ -6,17 +6,31 @@ public class EnemyAI : MonoBehaviour
     public int currentHealth;
     public int maxHealth=50;
     private GameObject targetBuilding;
-    public Pathfinding pathfinding;
+    
 
     private void Start()
     {
-        
-        currentHealth =maxHealth;
+        UpdateTarget();
+        currentHealth=maxHealth;
     }
 
     private void Update()
     {
-       
+        if (targetBuilding == null)
+        {
+            UpdateTarget(); // Find a new target if the current one is destroyed
+            return;
+        }
+
+        // Move towards the target building
+        Vector2 direction = (targetBuilding.transform.position - transform.position).normalized;
+        transform.Translate(direction * speed * Time.deltaTime);
+
+        // Check if reached the target
+        if (Vector2.Distance(transform.position, targetBuilding.transform.position) < 0.5f)
+        {
+            //AttackBuilding();
+        }
     }
 
     private void UpdateTarget()
@@ -34,6 +48,16 @@ public class EnemyAI : MonoBehaviour
             }
         }
     }
+
+    //private void AttackBuilding()
+    //{
+    //    Building building = targetBuilding.GetComponent<Building>();
+    //    if (building != null)
+    //    {
+    //        building.TakeDamage(10); // Example damage value
+    //    }
+    //    
+    //}
 
     public void TakeDamage(int damage)
     {

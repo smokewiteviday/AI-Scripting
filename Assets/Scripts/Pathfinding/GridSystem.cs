@@ -12,9 +12,6 @@ public class GridSystem : MonoBehaviour
     public int turretRange = 2; // The range of the turret in grid cells.
     public GameObject spawnerPrefab;
     private Cell[,] grid;
-    public Vector2 start;
-    public Vector2 end;
-    public Pathfinding pathfinding;
 
     private int[,] testMap = new int[10, 10] // Test map: 1 = walkable, 0 = unwalkable
    {
@@ -32,10 +29,8 @@ public class GridSystem : MonoBehaviour
 
     private void Start()
     {
-        
         GenerateGrid();
         PlaceTurrets();
-        StartToEndPoint();
         PlaceEnemySpawner();
     }
 
@@ -131,7 +126,7 @@ public class GridSystem : MonoBehaviour
             Cell bestCell = unwalkableCells[i].cell;
 
             // Get the world position of the cell.
-            Vector2 turretPosition = GetWorldPosition(bestCell.GridX, bestCell.GridY);
+            Vector3 turretPosition = GetWorldPosition(bestCell.GridX, bestCell.GridY);
 
             // Instantiate the turret prefab at the cell's position.
             Instantiate(turretPrefab, turretPosition, Quaternion.identity);
@@ -179,51 +174,37 @@ public class GridSystem : MonoBehaviour
     // Places an enemy spawner at the starting walkable cell in the grid.
     private void PlaceEnemySpawner()
     {
-        // Ensure the starting point is within the grid bounds.
-        int startX = Mathf.RoundToInt(start.x);
-        int startY = Mathf.RoundToInt(start.y);
-
-        if (startX >= 0 && startX < gridWidth && startY >= 0 && startY < gridHeight)
+        // Loop through all cells in the grid.
+        for (int x = 0; x < gridWidth; x++)
         {
-            Cell startCell = grid[startX, startY];
-
-            // Check if the starting cell is walkable.
-            if (startCell.IsWalkable)
+            for (int y = 0; y < gridHeight; y++)
             {
-                // Get the world position of the starting cell.
-                Vector2 spawnerPosition = GetWorldPosition(startCell.GridX, startCell.GridY);
+                Cell cell = grid[x, y];
 
-                // Instantiate the spawner prefab at the cell's position.
-                Instantiate(spawnerPrefab, spawnerPosition, Quaternion.identity);
+                // Check if the cell is walkable.
+                if (cell.IsWalkable)
+                {
+                    // Get the world position of the cell.
+                    Vector3 spawnerPosition = GetWorldPosition(cell.GridX, cell.GridY);
 
-                // Log the placement for debugging.
-                Debug.Log($"Enemy spawner placed at the starting point: {startCell.GridX}, {startCell.GridY}");
-            }
-            else
-            {
-                Debug.LogError($"Starting cell at {startCell.GridX}, {startCell.GridY} is not walkable!");
+                    // Instantiate the spawner prefab at the cell's position.
+                    Instantiate(spawnerPrefab, spawnerPosition, Quaternion.identity);
+
+                    // Log the placement for debugging.
+                    Debug.Log($"Enemy spawner placed at: {cell.GridX}, {cell.GridY}");
+
+                    // Exit the loop after placing the spawner.
+                    return;
+                }
             }
         }
-        else
-        {
-            Debug.LogError("Starting point is out of grid bounds!");
-        }
+
+        // If no walkable cell was found, log a warning.
+        Debug.LogWarning("No walkable cells found for enemy spawner placement!");
     }
-    public void StartToEndPoint()
+
+    private void OnDrawGizmos()
     {
-        this.start = new Vector2(0, 5);
-        this.end = new Vector2(9, 6);
-
-        var path = pathfinding. FindPath(start, end);
-
-        if (path != null)
-        {
-            foreach (var cell in path)
-            {
-                cell.GetComponent<SpriteRenderer>().color = Color.green;
-            }
-        }
+       
     }
-
-    
 }

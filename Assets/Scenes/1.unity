@@ -132,7 +132,6 @@ GameObject:
   m_Component:
   - component: {fileID: 187051304}
   - component: {fileID: 187051305}
-  - component: {fileID: 187051306}
   m_Layer: 0
   m_Name: GridSystem
   m_TagString: Untagged
@@ -174,21 +173,6 @@ MonoBehaviour:
   turretPrefab: {fileID: 4035741366737655657, guid: f351aff963998c247915bb93befb3558, type: 3}
   turretRange: 2
   spawnerPrefab: {fileID: 8912126599181032594, guid: 4504da6cc46dada4d95b5934be58ab00, type: 3}
-  start: {x: 0, y: 0}
-  end: {x: 0, y: 0}
-  pathfinding: {fileID: 187051306}
---- !u!114 &187051306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 187051303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa79bf91dcd6cf42a5ec32d6cbe3511, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &318512427
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,6 +331,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1555898414}
+  - component: {fileID: 1555898413}
+  - component: {fileID: 1555898415}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -354,6 +340,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1555898413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555898412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fa79bf91dcd6cf42a5ec32d6cbe3511, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1555898414
 Transform:
   m_ObjectHideFlags: 0
@@ -369,6 +367,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1555898415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555898412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efd4c5da55eb7f74b9d58d7b043c1699, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathfinding: {fileID: 1555898413}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
