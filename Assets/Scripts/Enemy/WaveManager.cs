@@ -47,24 +47,10 @@ public class WaveManager : MonoBehaviour
             timeSinceLastSpawn = 0f;
         }
     }
-
-    
-
-    //private IEnumerator SpawnWave()
-    //{
-    //    int enemyCount = waveNumber * 3; // Example scaling formula
-    //    for (int i = 0; i < enemyCount; i++)
-    //    {
-    //        SpawnEnemy();
-    //        yield return new WaitForSeconds(1f);
-    //    }
-    //    waveNumber++;
-    //}
-
     private void SpawnEnemy()
     {
         Debug.Log("Spawn Enemy");
         GameObject prefabToSpawn = enemyPrefab[0];
-        Instantiate(prefabToSpawn);
+        Instantiate(prefabToSpawn, this.transform.position, Quaternion.identity);
     }
 }

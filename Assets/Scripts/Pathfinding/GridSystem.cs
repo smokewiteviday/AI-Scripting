@@ -12,6 +12,9 @@ public class GridSystem : MonoBehaviour
     public int turretRange = 2; // The range of the turret in grid cells.
     public GameObject spawnerPrefab;
     private Cell[,] grid;
+    public Vector2 start;
+    public Vector2 end;
+    public Pathfinding pathfinding;
 
     private int[,] testMap = new int[10, 10] // Test map: 1 = walkable, 0 = unwalkable
    {
@@ -31,6 +34,7 @@ public class GridSystem : MonoBehaviour
     {
         GenerateGrid();
         PlaceTurrets();
+        StartToEndPoint();
         PlaceEnemySpawner();
     }
 
@@ -45,7 +49,7 @@ public class GridSystem : MonoBehaviour
                 Vector2 worldPosition = GetWorldPosition(x, y);
                 GameObject cellObj = Instantiate(cellPrefab, worldPosition, Quaternion.identity);
                 Cell cell = cellObj.GetComponent<Cell>();
-                bool isWalkable = testMap[y,x]==1;
+                bool isWalkable = testMap[y, x] == 1;
                 cell.Initialize(x, y, isWalkable);
                 grid[x, y] = cell;
             }
@@ -55,7 +59,7 @@ public class GridSystem : MonoBehaviour
     // Converts grid coordinates to world position.
     public Vector2 GetWorldPosition(int x, int y)
     {
-        return new Vector2(x * cellSize, y * cellSize );
+        return new Vector2(x * cellSize, y * cellSize);
     }
 
     // Retrieves the cell at a specific world position.
@@ -174,37 +178,47 @@ public class GridSystem : MonoBehaviour
     // Places an enemy spawner at the starting walkable cell in the grid.
     private void PlaceEnemySpawner()
     {
-        // Loop through all cells in the grid.
-        for (int x = 0; x < gridWidth; x++)
+        // Ensure the starting point is within the grid bounds.
+        int startX = Mathf.RoundToInt(start.x);
+        int startY = Mathf.RoundToInt(start.y);
+
+        if (startX >= 0 && startX < gridWidth && startY >= 0 && startY < gridHeight)
         {
-            for (int y = 0; y < gridHeight; y++)
+            Cell startCell = grid[startX, startY];
+
+            // Check if the starting cell is walkable.
+            if (startCell.IsWalkable)
             {
-                Cell cell = grid[x, y];
+                // Get the world position of the starting cell.
+                Vector2 spawnerPosition = GetWorldPosition(startCell.GridX, startCell.GridY);
 
-                // Check if the cell is walkable.
-                if (cell.IsWalkable)
-                {
-                    // Get the world position of the cell.
-                    Vector3 spawnerPosition = GetWorldPosition(cell.GridX, cell.GridY);
+                // Instantiate the spawner prefab at the cell's position.
+                Instantiate(spawnerPrefab, spawnerPosition, Quaternion.identity);
 
-                    // Instantiate the spawner prefab at the cell's position.
-                    Instantiate(spawnerPrefab, spawnerPosition, Quaternion.identity);
-
-                    // Log the placement for debugging.
-                    Debug.Log($"Enemy spawner placed at: {cell.GridX}, {cell.GridY}");
-
-                    // Exit the loop after placing the spawner.
-                    return;
-                }
+                // Log the placement for debugging.
+                Debug.Log($"Enemy spawner placed at the starting point: {startCell.GridX}, {startCell.GridY}");
+            }
+            else
+            {
+                Debug.LogError($"Starting cell at {startCell.GridX}, {startCell.GridY} is not walkable!");
             }
         }
-
-        // If no walkable cell was found, log a warning.
-        Debug.LogWarning("No walkable cells found for enemy spawner placement!");
+        else
+        {
+            Debug.LogError("Starting point is out of grid bounds!");
+        }
     }
-
-    private void OnDrawGizmos()
+    public void StartToEndPoint()
     {
-       
+        this.start = new Vector2(0, 5);
+        this.end = new Vector2(9, 6);
+        var path = pathfinding.FindPath(start, end);
+        if (path != null)
+        {
+            foreach (var cell in path)
+            {
+                cell.GetComponent<SpriteRenderer>().color = Color.green;
+            }
+        }
     }
 }

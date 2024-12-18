@@ -48,17 +48,6 @@ public class EnemyAI : MonoBehaviour
             }
         }
     }
-
-    //private void AttackBuilding()
-    //{
-    //    Building building = targetBuilding.GetComponent<Building>();
-    //    if (building != null)
-    //    {
-    //        building.TakeDamage(10); // Example damage value
-    //    }
-    //    
-    //}
-
     public void TakeDamage(int damage)
     {
        
