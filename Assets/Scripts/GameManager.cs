@@ -1,12 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public int maxHealth = 10; // Maximum health for the player
-    private int currentHealth; // Current health of the player
+    public int maxHealth = 10; 
+    private int currentHealth; 
 
     private float timer = 0f;
 
+    public GameObject UI;
     private void Start()
     {
         currentHealth = maxHealth;
@@ -20,7 +22,7 @@ public class GameManager : MonoBehaviour
 
         if (timer >= 5f)
         {
-            EnemyAI.IncreaseBoosts(0.2f, 0.1f); // Example boost for health and speed
+            EnemyAI.IncreaseBoosts(0.2f, 0.1f); 
             timer = 0f;
         }
     }
@@ -39,11 +41,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Handles game over logic
+   
     private void GameOver()
     {
         Debug.Log("Game Over! Player health has dropped to 0.");
-        // Implement further game over logic (e.g., restart, show game over screen)
+        UI.SetActive(true);
+        Time.timeScale = 0f;
     }
 
     public int GetCurrentHealth()

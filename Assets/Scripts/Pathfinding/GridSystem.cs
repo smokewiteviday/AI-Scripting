@@ -36,7 +36,6 @@ public class GridSystem : MonoBehaviour
         GenerateGrid();
         StartCoroutine(PlaceTurretsOverTime());
         StartToEndPoint();
-
         StartCoroutine(SpawnEnemies());
     }
 
@@ -199,38 +198,30 @@ public class GridSystem : MonoBehaviour
     {
         while (true)
         {
-            SpawnEnemy(); // Spawn an enemy
-            yield return new WaitForSeconds(2f); // Wait for 2 seconds before spawning the next enemy
+            SpawnEnemy(); 
+            yield return new WaitForSeconds(2f);
         }
     }
     public void SpawnEnemy()
     {
         // Get the spawn position from the grid
         Vector2 spawnPosition = GetWorldPosition((int)start.x, (int)start.y);
-
-        // Instantiate the enemy
         GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-        
-        // Find the path for the enemy to follow
         var path = pathfinding.FindPath(start, end);
-
         if (path != null && path.Count > 0)
         {
             // Initialize the enemy with the path and the grid system
             EnemyAI enemyMovement = enemy.GetComponent<EnemyAI>();
             if (enemyMovement != null)
             {
-                enemyMovement.Initialize(path, this); // Pass the grid system to the enemy
+                enemyMovement.Initialize(path, this); 
             }
-            else
-            {
-                Debug.LogError("Enemy prefab is missing the EnemyMovement component!");
-            }
+            
         }
         else
         {
-            Debug.LogError("No valid path found for the enemy to follow!");
-            Destroy(enemy); // Optional: destroy the enemy if no path is found
+            Debug.LogError("No valid path found for the enemy to follow");
+            Destroy(enemy);
         }
     }
 

@@ -119,13 +119,13 @@ public class EnemyAI : MonoBehaviour
     // ===== STATE: IDLE =====
     private void StartIdle()
     {
-        Debug.Log("Enemy is now Idle.");
+        
         stateComplete = true;
     }
 
     private void UpdateIdle()
     {
-        // Add behavior for idle if needed
+        
     }
 
     // ===== STATE: RUN =====
@@ -178,7 +178,7 @@ public class EnemyAI : MonoBehaviour
     // ===== STATE: UPGRADE =====
     private void StartUpgrade()
     {
-        Debug.Log("Enemy is upgrading.");
+      
        
         stateComplete = true;
     }
