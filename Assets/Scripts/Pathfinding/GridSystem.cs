@@ -8,9 +8,8 @@ public class GridSystem : MonoBehaviour
     public int gridHeight = 10;
     public float cellSize = 1f;
     public GameObject cellPrefab;
-    public GameObject turretPrefab; // Prefab for the turret to be placed on unwalkable cells.
-    public int turretRange = 2; // The range of the turret in grid cells.
-    
+    public GameObject turretPrefab;
+    public int turretRange = 2; 
     private Cell[,] grid;
     public Vector2 start;
     public Vector2 end;
@@ -131,11 +130,8 @@ public class GridSystem : MonoBehaviour
             if (turretsPlaced < unwalkableCells.Count)
             {
                 Cell bestCell = unwalkableCells[turretsPlaced].cell;
-
-                // Get the world position of the cell
                 Vector3 turretPosition = GetWorldPosition(bestCell.GridX, bestCell.GridY);
-
-                // Instantiate the turret prefab at the cell's position
+              
                 Instantiate(turretPrefab, turretPosition, Quaternion.identity);
 
                 Debug.Log($"Turret {turretsPlaced + 1} placed at: {bestCell.GridX}, {bestCell.GridY}, covering {unwalkableCells[turretsPlaced].coveredCells} walkable cells.");
@@ -145,10 +141,10 @@ public class GridSystem : MonoBehaviour
             else
             {
                 Debug.LogWarning("No more suitable unwalkable cells for turret placement!");
-                break; // Exit the loop if there are no more suitable cells
+                break; 
             }
 
-            // Wait for 10 seconds before placing the next turret
+            
             yield return new WaitForSeconds(5f);
         }
     }
