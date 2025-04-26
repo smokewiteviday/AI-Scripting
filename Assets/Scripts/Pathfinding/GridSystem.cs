@@ -45,9 +45,31 @@ public class GridSystem : MonoBehaviour
             }
         }
 
+        // Randomly select start and end points on opposite edges for maximum distance
+        int edgeChoice = Random.Range(0, 2); // 0 for left-right, 1 for top-bottom
+
+        if (edgeChoice == 0) // Left-right edges
+        {
+            // Start on the left edge (x = 0)
+            int startY = Random.Range(0, gridHeight);
+            start = new Vector2(0, startY);
+
+            // End on the right edge (x = gridWidth - 1)
+            int endY = Random.Range(0, gridHeight);
+            end = new Vector2(gridWidth - 1, endY);
+        }
+        else // Top-bottom edges
+        {
+            // Start on the top edge (y = gridHeight - 1)
+            int startX = Random.Range(0, gridWidth);
+            start = new Vector2(startX, gridHeight - 1);
+
+            // End on the bottom edge (y = 0)
+            int endX = Random.Range(0, gridWidth);
+            end = new Vector2(endX, 0);
+        }
+
         // Ensure start and end points are walkable
-        start = new Vector2(0, 5);
-        end = new Vector2(gridWidth - 1, gridHeight / 2);
         randomMap[(int)start.x, (int)start.y] = 1;
         randomMap[(int)end.x, (int)end.y] = 1;
     }
