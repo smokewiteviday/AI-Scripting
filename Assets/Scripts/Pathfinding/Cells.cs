@@ -35,5 +35,10 @@ public class Cell : MonoBehaviour
         IsWalkable = isWalkable;
         spriteRenderer.color = isWalkable ? Color.white : Color.red;
     }
-}
 
+    // Sets a custom color for the cell (e.g., for the path)
+    public void SetColor(Color color)
+    {
+        spriteRenderer.color = color;
+    }
+}

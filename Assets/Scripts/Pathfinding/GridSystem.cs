@@ -18,9 +18,11 @@ public class GridSystem : MonoBehaviour
 
     private int[,] randomMap;
     private float walkableProbability = 0.6f; // Adjust this to control walkable tile percentage
+    private HashSet<Vector2Int> turretPositions; // Track positions where turrets are placed
 
     private void Start()
     {
+        turretPositions = new HashSet<Vector2Int>(); // Initialize the set to track turret positions
         do
         {
             GenerateRandomMap(); // Generate a new random map
@@ -141,6 +143,7 @@ public class GridSystem : MonoBehaviour
     {
         List<(Cell cell, int coveredCells)> unwalkableCells = new List<(Cell, int)>();
 
+        // Collect all unwalkable cells
         for (int x = 0; x < gridWidth; x++)
         {
             for (int y = 0; y < gridHeight; y++)
@@ -155,26 +158,48 @@ public class GridSystem : MonoBehaviour
         }
 
         unwalkableCells.Sort((a, b) => b.coveredCells.CompareTo(a.coveredCells));
-        int turretsPlaced = 0;
 
-        while (turretsPlaced < 10)
+        while (unwalkableCells.Count > 0)
         {
-            if (turretsPlaced < unwalkableCells.Count)
+            Cell bestCell = unwalkableCells[0].cell;
+            Vector2Int cellPos = new Vector2Int(bestCell.GridX, bestCell.GridY);
+
+            // Place turret only if no turret exists at this position
+            if (!turretPositions.Contains(cellPos))
             {
-                Cell bestCell = unwalkableCells[turretsPlaced].cell;
                 Vector3 turretPosition = GetWorldPosition(bestCell.GridX, bestCell.GridY);
                 Instantiate(turretPrefab, turretPosition, Quaternion.identity);
+                turretPositions.Add(cellPos); // Mark this position as occupied
 
-                Debug.Log($"Turret {turretsPlaced + 1} placed at: {bestCell.GridX}, {bestCell.GridY}, covering {unwalkableCells[turretsPlaced].coveredCells} walkable cells.");
-                turretsPlaced++;
+                Debug.Log($"Turret placed at: {bestCell.GridX}, {bestCell.GridY}, covering {unwalkableCells[0].coveredCells} walkable cells.");
             }
-            else
+
+            // Remove the cell from the list after attempting to place a turret
+            unwalkableCells.RemoveAt(0);
+
+            // Stop if there are no more unwalkable cells without turrets
+            if (!HasUnoccupiedUnwalkableCells(unwalkableCells))
             {
-                Debug.LogWarning("No more suitable unwalkable cells for turret placement!");
+                Debug.Log("No more unwalkable cells without turrets to place turrets on!");
                 break;
             }
+
             yield return new WaitForSeconds(5f);
         }
+    }
+
+    // Check if there are any unwalkable cells without turrets
+    private bool HasUnoccupiedUnwalkableCells(List<(Cell cell, int coveredCells)> unwalkableCells)
+    {
+        foreach (var (cell, _) in unwalkableCells)
+        {
+            Vector2Int cellPos = new Vector2Int(cell.GridX, cell.GridY);
+            if (!turretPositions.Contains(cellPos))
+            {
+                return true; // Found an unwalkable cell without a turret
+            }
+        }
+        return false;
     }
 
     private int CalculateCoveredWalkableCells(Cell centerCell)

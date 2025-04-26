@@ -62,6 +62,12 @@ public class EnemyAI : MonoBehaviour
         currentPathIndex = 0;
         isMoving = true;
 
+        // Color the path green
+        foreach (Cell cell in path)
+        {
+            cell.SetColor(Color.green);
+        }
+
         // Start in Run state when initialized
         ChangeState(EnemyState.Run);
     }
@@ -119,13 +125,11 @@ public class EnemyAI : MonoBehaviour
     // ===== STATE: IDLE =====
     private void StartIdle()
     {
-        
         stateComplete = true;
     }
 
     private void UpdateIdle()
     {
-        
     }
 
     // ===== STATE: RUN =====
@@ -178,8 +182,6 @@ public class EnemyAI : MonoBehaviour
     // ===== STATE: UPGRADE =====
     private void StartUpgrade()
     {
-      
-       
         stateComplete = true;
     }
 
