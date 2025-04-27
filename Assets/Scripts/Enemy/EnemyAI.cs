@@ -62,10 +62,14 @@ public class EnemyAI : MonoBehaviour
         currentPathIndex = 0;
         isMoving = true;
 
-        // Color the path green
+        // Color the path green, but skip start points and end point to preserve their colors
         foreach (Cell cell in path)
         {
-            cell.SetColor(Color.green);
+            Vector2 cellPosition = new Vector2(cell.GridX, cell.GridY);
+            if (!gridSystem.startPoints.Contains(cellPosition) && cellPosition != gridSystem.end)
+            {
+                cell.SetColor(Color.green);
+            }
         }
 
         // Start in Run state when initialized
