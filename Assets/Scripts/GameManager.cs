@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public int maxHealth = 10; 
+    public int maxHealth = 20; 
     private int currentHealth; 
 
     private float timer = 0f;

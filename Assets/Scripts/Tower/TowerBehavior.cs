@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TowerAI : MonoBehaviour
 {
-    enum TowerState { Idle, Attack, Upgrade}
+    enum TowerState { Idle, Attack, Upgrade }
     TowerState state;
     bool stateComplete;
     public float fireRate = 1f; // Time between shots
@@ -13,6 +13,10 @@ public class TowerAI : MonoBehaviour
     private int enemiesKilled;
     [SerializeField] private ObjectPool projectilePool;
 
+    // Damage settings
+    private float baseDamage = 20f; // Base damage of the projectile
+    private float damageIncreasePerKill = 5f; // Damage increase per enemy killed
+
     private void Start()
     {
         // Find the object pool in the scene
@@ -21,12 +25,13 @@ public class TowerAI : MonoBehaviour
         {
             Debug.LogError("No ObjectPool found in the scene!");
         }
+        enemiesKilled = 0; // Initialize enemies killed
     }
 
     private void Update()
     {
-       
-        if (stateComplete) {
+        if (stateComplete)
+        {
             SelectState();
         }
         UpdateState();
@@ -59,18 +64,30 @@ public class TowerAI : MonoBehaviour
         {
             projectile.SetActive(true);
             projectile.transform.position = transform.position;
-            projectileScript.SetTarget(target); // Assign the target to the projectile
-          
+            // Calculate the current damage based on enemies killed
+            float currentDamage = baseDamage + (enemiesKilled * damageIncreasePerKill);
+            projectileScript.SetTargetAndDamage(target, currentDamage); // Pass the damage to the projectile
+            Debug.Log($"Tower at {transform.position} shoots with damage: {currentDamage}");
         }
-        else { projectile.SetActive(false); }
-    }   
-   
+        else
+        {
+            projectile.SetActive(false);
+        }
+    }
+
+    // Called by the projectile when it kills an enemy
+    public void OnEnemyKilled()
+    {
+        enemiesKilled++;
+        Debug.Log($"Tower at {transform.position} has killed {enemiesKilled} enemies.");
+    }
+
     void SelectState()
     {
         stateComplete = false;
         if (FindClosestEnemy() != null)
         {
-            state=TowerState.Attack;
+            state = TowerState.Attack;
             StartAttack();
         }
         if (enemiesLeftToUpgrade <= 0)
@@ -78,11 +95,13 @@ public class TowerAI : MonoBehaviour
             state = TowerState.Upgrade;
             StartUpgrade();
         }
-        else { 
-            state=TowerState.Idle;
+        else
+        {
+            state = TowerState.Idle;
             StartIdle();
         }
     }
+
     void UpdateState()
     {
         switch (state)
@@ -98,10 +117,11 @@ public class TowerAI : MonoBehaviour
                 break;
         }
     }
+
     private void StartIdle()
     {
-
     }
+
     private void StartAttack()
     {
         GameObject targetEnemy = FindClosestEnemy();
@@ -121,14 +141,16 @@ public class TowerAI : MonoBehaviour
             }
         }
     }
+
     private void StartUpgrade()
     {
-        
     }
+
     private void UpdateIdle()
     {
         stateComplete = true;
     }
+
     private void UpdateAttack()
     {
         if (FindClosestEnemy() != null)
@@ -136,10 +158,9 @@ public class TowerAI : MonoBehaviour
             stateComplete = true;
         }
     }
+
     private void UpdateUpgrade()
     {
         stateComplete = true;
     }
-    
-
 }

@@ -3,13 +3,20 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public float speed = 10f;
-    public int damage = 20;
+    private float damage; // Damage is now dynamic
     private Transform target;
-    
+    private TowerAI tower; // Reference to the tower that shot this projectile
 
-    public void SetTarget(GameObject targetObject)
+    public void SetTargetAndDamage(GameObject targetObject, float damageValue)
     {
         target = targetObject.transform;
+        damage = damageValue;
+        // Find the tower that shot this projectile
+        tower = targetObject.GetComponent<EnemyAI>().GetComponentInParent<TowerAI>();
+        if (tower == null)
+        {
+            tower = FindObjectOfType<TowerAI>(); // Fallback to find any TowerAI (less reliable)
+        }
     }
 
     private void Update()
@@ -26,13 +33,11 @@ public class Projectile : MonoBehaviour
 
         if (direction.magnitude <= distanceThisFrame)
         {
-          
             return;
         }
 
         transform.Translate(direction.normalized * distanceThisFrame, Space.World);
     }
-
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -40,21 +45,21 @@ public class Projectile : MonoBehaviour
         {
             gameObject.SetActive(false);
             EnemyAI enemy = target.GetComponent<EnemyAI>();
-           
 
             if (enemy != null)
             {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage((int)damage);
 
+                if (enemy.currentHealth <= 0)
+                {
+                    enemy.Die();
+                    // Notify the tower that an enemy was killed
+                    if (tower != null)
+                    {
+                        tower.OnEnemyKilled();
+                    }
+                }
             }
-            if (enemy.currentHealth <= 0)
-            {
-                enemy.Die();
-                
-               
-            }
-           
         }
     }
-    
 }
