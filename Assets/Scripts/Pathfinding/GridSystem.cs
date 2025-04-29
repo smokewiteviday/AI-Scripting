@@ -26,6 +26,7 @@ public class GridSystem : MonoBehaviour
     private int enemiesPerSpawn = 1; // Number of enemies to spawn per start point
     private float timePerEnemyIncrease = 30f; // Increase every 30 seconds
     private GameManager gameManager; // Reference to GameManager to access gameTime
+    private float spawnDelayBetweenEnemies = 0.5f; // Increased delay to prevent overlap
 
     private void Start()
     {
@@ -126,7 +127,7 @@ public class GridSystem : MonoBehaviour
                 GameObject cellObj = Instantiate(cellPrefab, worldPosition, Quaternion.identity);
                 Cell cell = cellObj.GetComponent<Cell>();
                 bool isWalkable = randomMap[x, y] == 1;
-                cell.Initialize(x, y, isWalkable);
+                cell.Initialize(x, y, isWalkable); // This sets unwalkable cells to red via Cell.cs
                 grid[x, y] = cell;
             }
         }
@@ -141,11 +142,11 @@ public class GridSystem : MonoBehaviour
             }
         }
 
-        // Color the end point cell red
+        // Color the end point cell blue
         Cell endCell = grid[(int)end.x, (int)end.y];
         if (endCell != null)
         {
-            endCell.SetColor(Color.red);
+            endCell.SetColor(Color.blue);
         }
     }
 
@@ -292,13 +293,13 @@ public class GridSystem : MonoBehaviour
     {
         List<(Cell cell, int coveredCells)> unwalkableCells = new List<(Cell, int)>();
 
-        // Collect all unwalkable cells
+        // Collect all unwalkable cells (should be red as set in Cell.cs)
         for (int x = 0; x < gridWidth; x++)
         {
             for (int y = 0; y < gridHeight; y++)
             {
                 Cell cell = grid[x, y];
-                if (!cell.IsWalkable)
+                if (!cell.IsWalkable) // Only add unwalkable cells
                 {
                     int coveredCells = CalculateCoveredWalkableCells(cell);
                     unwalkableCells.Add((cell, coveredCells));
@@ -306,12 +307,22 @@ public class GridSystem : MonoBehaviour
             }
         }
 
+        // Sort by coverage (descending order)
         unwalkableCells.Sort((a, b) => b.coveredCells.CompareTo(a.coveredCells));
 
+        // Place turrets on unwalkable cells until none are left
         while (unwalkableCells.Count > 0)
         {
             Cell bestCell = unwalkableCells[0].cell;
             Vector2Int cellPos = new Vector2Int(bestCell.GridX, bestCell.GridY);
+
+            // Double-check the cell is unwalkable (should always be true)
+            if (bestCell.IsWalkable)
+            {
+                Debug.LogError($"Trying to place turret on walkable cell at ({bestCell.GridX}, {bestCell.GridY})! This should not happen.");
+                unwalkableCells.RemoveAt(0);
+                continue;
+            }
 
             // Place turret only if no turret exists at this position
             if (!turretPositions.Contains(cellPos))
@@ -336,7 +347,7 @@ public class GridSystem : MonoBehaviour
             // Stop if there are no more unwalkable cells without turrets
             if (!HasUnoccupiedUnwalkableCells(unwalkableCells))
             {
-                Debug.Log("No more unwalkable cells without turrets to place turrets on!");
+                Debug.Log($"No more unwalkable cells available to place turrets. Total turrets placed: {turretsPlacedCount}");
                 break;
             }
 
@@ -401,26 +412,55 @@ public class GridSystem : MonoBehaviour
             // Create a copy of startPoints to avoid modification issues during iteration
             List<Vector2> startPointsCopy = new List<Vector2>(startPoints);
 
-            // Spawn enemies from all start points simultaneously
+            // Start spawning enemies from all start points simultaneously
+            List<IEnumerator> spawnCoroutines = new List<IEnumerator>();
             foreach (var start in startPointsCopy)
             {
-                // Spawn the calculated number of enemies from each start point
-                for (int i = 0; i < enemiesPerSpawn; i++)
-                {
-                    SpawnEnemy(start, end);
-                    // Small delay between spawning multiple enemies from the same start point to avoid overlap
-                    yield return new WaitForSeconds(0.1f);
-                }
+                spawnCoroutines.Add(SpawnEnemiesAtStartPoint(start, end, enemiesPerSpawn));
             }
+
+            // Run all coroutines concurrently
+            yield return StartCoroutine(RunCoroutinesConcurrently(spawnCoroutines));
 
             // Wait before spawning the next wave
             yield return new WaitForSeconds(2f);
         }
     }
 
+    private IEnumerator SpawnEnemiesAtStartPoint(Vector2 start, Vector2 end, int enemiesToSpawn)
+    {
+        // Spawn the calculated number of enemies from this start point
+        for (int i = 0; i < enemiesToSpawn; i++)
+        {
+            SpawnEnemy(start, end);
+            // Increased delay between spawning multiple enemies from the same start point to avoid overlap
+            yield return new WaitForSeconds(spawnDelayBetweenEnemies);
+        }
+    }
+
+    private IEnumerator RunCoroutinesConcurrently(List<IEnumerator> coroutines)
+    {
+        // Start all coroutines
+        List<Coroutine> runningCoroutines = new List<Coroutine>();
+        foreach (var coroutine in coroutines)
+        {
+            runningCoroutines.Add(StartCoroutine(coroutine));
+        }
+
+        // Wait for all coroutines to complete
+        foreach (var coroutine in runningCoroutines)
+        {
+            yield return coroutine;
+        }
+    }
+
     public void SpawnEnemy(Vector2 start, Vector2 end)
     {
         Vector2 spawnPosition = GetWorldPosition((int)start.x, (int)start.y);
+        // Add a small random offset to the spawn position to prevent overlap
+        Vector2 offset = new Vector2(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f));
+        spawnPosition += offset;
+
         GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
         var path = pathfinding.FindPath(start, end);
         if (path != null && path.Count > 0)
