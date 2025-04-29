@@ -22,11 +22,24 @@ public class GridSystem : MonoBehaviour
     private int turretsPlacedCount; // Count the number of turrets placed
     private int endEdgeChoice; // Track which edge the end point is on
 
+    // Enemy spawning variables
+    private int enemiesPerSpawn = 1; // Number of enemies to spawn per start point
+    private float timePerEnemyIncrease = 30f; // Increase every 30 seconds
+    private GameManager gameManager; // Reference to GameManager to access gameTime
+
     private void Start()
     {
         turretPositions = new HashSet<Vector2Int>(); // Initialize the set to track turret positions
         startPoints = new List<Vector2>(); // Initialize the list of start points
         turretsPlacedCount = 0; // Initialize turret count
+
+        // Find the GameManager in the scene
+        gameManager = FindObjectOfType<GameManager>();
+        if (gameManager == null)
+        {
+            Debug.LogError("GameManager not found in the scene!");
+        }
+
         do
         {
             GenerateRandomMap(); // Generate a new random map
@@ -132,7 +145,7 @@ public class GridSystem : MonoBehaviour
         Cell endCell = grid[(int)end.x, (int)end.y];
         if (endCell != null)
         {
-            endCell.SetColor(Color.blue);
+            endCell.SetColor(Color.red);
         }
     }
 
@@ -377,10 +390,27 @@ public class GridSystem : MonoBehaviour
                 continue;
             }
 
-            // Spawn enemies from all start points simultaneously
-            foreach (var start in startPoints)
+            // Calculate enemiesPerSpawn based on game time
+            if (gameManager != null)
             {
-                SpawnEnemy(start, end);
+                float currentTime = gameManager.GetGameTime();
+                enemiesPerSpawn = 1 + Mathf.FloorToInt(currentTime / timePerEnemyIncrease);
+                Debug.Log($"Current time: {currentTime}, Enemies per spawn: {enemiesPerSpawn}");
+            }
+
+            // Create a copy of startPoints to avoid modification issues during iteration
+            List<Vector2> startPointsCopy = new List<Vector2>(startPoints);
+
+            // Spawn enemies from all start points simultaneously
+            foreach (var start in startPointsCopy)
+            {
+                // Spawn the calculated number of enemies from each start point
+                for (int i = 0; i < enemiesPerSpawn; i++)
+                {
+                    SpawnEnemy(start, end);
+                    // Small delay between spawning multiple enemies from the same start point to avoid overlap
+                    yield return new WaitForSeconds(0.1f);
+                }
             }
 
             // Wait before spawning the next wave

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 public class TowerAI : MonoBehaviour
 {
@@ -15,7 +16,10 @@ public class TowerAI : MonoBehaviour
 
     // Damage settings
     private float baseDamage = 20f; // Base damage of the projectile
-    private float damageIncreasePerKill = 5f; // Damage increase per enemy killed
+    private float damageIncreasePerKill = 2f; // Damage increase per enemy killed
+    private bool isUpgraded = false; // Track if the tower is upgraded
+    private float secondShotDelay = 0.2f; // Delay between the two shots after upgrade
+    private SpriteRenderer spriteRenderer; // To change the tower's color
 
     private void Start()
     {
@@ -26,6 +30,13 @@ public class TowerAI : MonoBehaviour
             Debug.LogError("No ObjectPool found in the scene!");
         }
         enemiesKilled = 0; // Initialize enemies killed
+
+        // Get the SpriteRenderer component to change color
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("SpriteRenderer not found on the tower!");
+        }
     }
 
     private void Update()
@@ -57,21 +68,67 @@ public class TowerAI : MonoBehaviour
 
     private void Shoot(GameObject target)
     {
-        // Fetch a projectile from the pool
+        // Calculate the current damage based on enemies killed
+        float currentDamage = baseDamage + (enemiesKilled * damageIncreasePerKill);
+
+        // Check if damage has reached 50 and upgrade if not already upgraded
+        if (currentDamage >= 50 && !isUpgraded)
+        {
+            isUpgraded = true;
+            ChangeToUpgradeState();
+        }
+
+        // If upgraded, shoot two projectiles with a delay; otherwise, shoot one
+        if (isUpgraded)
+        {
+            StartCoroutine(ShootTwoProjectiles(target, currentDamage));
+        }
+        else
+        {
+            ShootSingleProjectile(target, currentDamage);
+        }
+    }
+
+    private void ShootSingleProjectile(GameObject target, float damage)
+    {
+        if (projectilePool == null)
+        {
+            Debug.LogError($"Tower at {transform.position} failed to shoot: ObjectPool is null!");
+            return;
+        }
+
         GameObject projectile = projectilePool.GetPooledObject();
+        if (projectile == null)
+        {
+            Debug.LogWarning($"Tower at {transform.position} failed to shoot: No available projectiles in the pool!");
+            return;
+        }
+
         Projectile projectileScript = projectile.GetComponent<Projectile>();
         if (projectileScript != null)
         {
             projectile.SetActive(true);
             projectile.transform.position = transform.position;
-            // Calculate the current damage based on enemies killed
-            float currentDamage = baseDamage + (enemiesKilled * damageIncreasePerKill);
-            projectileScript.SetTargetAndDamage(target, currentDamage); // Pass the damage to the projectile
-            Debug.Log($"Tower at {transform.position} shoots with damage: {currentDamage}");
+            projectileScript.SetTargetAndDamage(target, damage);
+            Debug.Log($"Tower at {transform.position} shoots with damage: {damage}");
         }
         else
         {
+            Debug.LogError($"Tower at {transform.position} failed to shoot: Projectile script not found on object!");
             projectile.SetActive(false);
+        }
+    }
+
+    private IEnumerator ShootTwoProjectiles(GameObject target, float damage)
+    {
+        // First shot
+        ShootSingleProjectile(target, damage);
+        yield return new WaitForSeconds(secondShotDelay);
+
+        // Check if the target is still valid before shooting the second projectile
+        if (target != null && target.activeInHierarchy)
+        {
+            ShootSingleProjectile(target, damage);
         }
     }
 
@@ -89,11 +146,6 @@ public class TowerAI : MonoBehaviour
         {
             state = TowerState.Attack;
             StartAttack();
-        }
-        if (enemiesLeftToUpgrade <= 0)
-        {
-            state = TowerState.Upgrade;
-            StartUpgrade();
         }
         else
         {
@@ -142,8 +194,20 @@ public class TowerAI : MonoBehaviour
         }
     }
 
+    private void ChangeToUpgradeState()
+    {
+        state = TowerState.Upgrade;
+        StartUpgrade();
+    }
+
     private void StartUpgrade()
     {
+        // Change the tower's color to blue when upgraded
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.blue;
+        }
+        Debug.Log($"Tower at {transform.position} has upgraded to shoot two projectiles and turned blue!");
     }
 
     private void UpdateIdle()
@@ -161,6 +225,7 @@ public class TowerAI : MonoBehaviour
 
     private void UpdateUpgrade()
     {
-        stateComplete = true;
+        // After upgrading, continue attacking with the new behavior
+        StartAttack();
     }
 }

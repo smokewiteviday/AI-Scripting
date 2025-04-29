@@ -1,56 +1,64 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI; // For using UI Text (or TMPro for TextMeshPro)
+using TMPro; // If using TextMeshPro
 
 public class GameManager : MonoBehaviour
 {
-    public int maxHealth = 20; 
-    private int currentHealth; 
+    public int enemiesReachedEndpoint = 0;
+    public int maxEnemiesAllowed = 10;
 
-    private float timer = 0f;
+    // Timer variables
+    private float gameTime = 0f; // Time in seconds
+    public Text timerText; // Reference to UI Text (for regular Text)
+    // public TextMeshProUGUI timerText; // Uncomment if using TextMeshPro
 
-    public GameObject UI;
     private void Start()
     {
-        currentHealth = maxHealth;
-        Debug.Log($"Player Health: {currentHealth}");
+        // Ensure timerText is assigned in the Inspector
+        if (timerText == null)
+        {
+            Debug.LogError("Timer Text is not assigned in the GameManager!");
+        }
     }
 
     private void Update()
     {
-        // Periodic enemy boost logic
-        timer += Time.deltaTime;
-
-        if (timer >= 5f)
-        {
-            EnemyAI.IncreaseBoosts(0.2f, 0.1f); 
-            timer = 0f;
-        }
+        // Update the game timer
+        gameTime += Time.deltaTime;
+        UpdateTimerDisplay();
     }
 
-    // Called when an enemy reaches the endpoint
+    public float GetGameTime()
+    {
+        return gameTime;
+    }
+
     public void EnemyReachedEndpoint()
     {
-        int damage = 1; // Damage dealt to the player when an enemy reaches the endpoint
-        currentHealth -= damage;
+        enemiesReachedEndpoint++;
+        Debug.Log($"Enemy reached endpoint. Total: {enemiesReachedEndpoint}");
 
-        Debug.Log($"Player took {damage} damage! Current Health: {currentHealth}");
-
-        if (currentHealth <= 0)
+        if (enemiesReachedEndpoint >= maxEnemiesAllowed)
         {
             GameOver();
         }
     }
 
-   
-    private void GameOver()
+    private void UpdateTimerDisplay()
     {
-        Debug.Log("Game Over! Player health has dropped to 0.");
-        UI.SetActive(true);
-        Time.timeScale = 0f;
+        if (timerText != null)
+        {
+            // Convert gameTime to minutes and seconds
+            int minutes = Mathf.FloorToInt(gameTime / 60f);
+            int seconds = Mathf.FloorToInt(gameTime % 60f);
+            timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
     }
 
-    public int GetCurrentHealth()
+    private void GameOver()
     {
-        return currentHealth;
+        Debug.Log("Game Over! Too many enemies reached the endpoint.");
+        // Add additional game over logic here (e.g., stop spawning enemies, show game over screen)
+        Time.timeScale = 0f; // Pause the game
     }
 }
