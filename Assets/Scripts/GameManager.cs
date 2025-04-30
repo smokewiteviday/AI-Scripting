@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI; // For using UI Text (or TMPro for TextMeshPro)
-using TMPro; // If using TextMeshPro
+using UnityEngine.UI; 
+using TMPro; 
 
 public class GameManager : MonoBehaviour
 {
@@ -8,9 +8,10 @@ public class GameManager : MonoBehaviour
     public int maxEnemiesAllowed = 10;
 
     // Timer variables
-    private float gameTime = 0f; // Time in seconds
-    public Text timerText; // Reference to UI Text (for regular Text)
-    // public TextMeshProUGUI timerText; // Uncomment if using TextMeshPro
+    private float gameTime = 0f; 
+    public Text timerText;
+
+    public GameObject UI;
 
     private void Start()
     {
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("Game Over! Too many enemies reached the endpoint.");
-        // Add additional game over logic here (e.g., stop spawning enemies, show game over screen)
-        Time.timeScale = 0f; // Pause the game
+        UI.SetActive(true);
+        Time.timeScale = 0f; 
     }
 }

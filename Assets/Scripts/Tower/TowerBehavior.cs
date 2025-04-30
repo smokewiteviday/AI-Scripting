@@ -15,11 +15,11 @@ public class TowerAI : MonoBehaviour
     [SerializeField] private ObjectPool projectilePool;
 
     // Damage settings
-    private float baseDamage = 20f; // Base damage of the projectile
-    private float damageIncreasePerKill = 2f; // Damage increase per enemy killed
-    private bool isUpgraded = false; // Track if the tower is upgraded
-    private float secondShotDelay = 0.2f; // Delay between the two shots after upgrade
-    private SpriteRenderer spriteRenderer; // To change the tower's color
+    private float baseDamage = 20f;
+    private float damageIncreasePerKill = 2f; 
+    private bool isUpgraded = false; 
+    private float secondShotDelay = 0.2f; 
+    private SpriteRenderer spriteRenderer; 
 
     private void Start()
     {

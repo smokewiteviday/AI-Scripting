@@ -518,8 +518,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesReachedEndpoint: 0
-  maxEnemiesAllowed: 10
+  maxEnemiesAllowed: 1
   timerText: {fileID: 788489423}
+  UI: {fileID: 1431485670}
 --- !u!4 &1108540926
 Transform:
   m_ObjectHideFlags: 0
